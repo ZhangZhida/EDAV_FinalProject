@@ -13,6 +13,7 @@
 
 library(shiny)
 library(shinydashboard)
+library(DT)
 
 # Define UI for application that draws a histogram
 ui <- dashboardPage(
@@ -23,6 +24,7 @@ ui <- dashboardPage(
       menuItem("Introduction", tabName = "introduction", icon = icon("info")),
       
       menuItem("Data", tabName = "data", icon = icon("database"),
+        menuSubItem("Raw Data", tabName = "raw_data", icon =  icon("angle-right")),
         menuSubItem("Data Description", tabName = "data_description", icon = icon("angle-right"))
       ),
       menuItem("Cost", tabName = "cost", icon = icon("th"),
@@ -45,17 +47,19 @@ ui <- dashboardPage(
         h2("EDAV Final Project")
       ),
       tabItem(
-        tabName = "data_description",
+        tabName = "raw_data",
         fluidPage(
           fluidRow(
             column(12,
-                   tableOutput('table')
+                   dataTableOutput('table')
             )
           )
         )
       ),
-      
-      
+      tabItem(
+        tabName = "data_description",
+        h2("data description")
+      ),
       tabItem(
         tabName = "admission", 
         fluidPage(
@@ -93,7 +97,7 @@ ui <- dashboardPage(
         tabName = "earnings", h2("earnings")
       ),
       tabItem(
-        tabName = "completions", h2("completions")
+        tabName = "completion", h2("completion")
       )
     )
   )
@@ -112,7 +116,12 @@ server <- function(input, output) {
   })
   
   # render table
-  output$table <- renderTable(iris)
+  output$table <- renderDT(
+    readRDS('college.rds') , options = list(scrollX = TRUE, autoWidth=TRUE)
+  )
+  # output$table <- renderDataTable({
+  #   college <- readRDS('college.rds')
+  # })
 }
 
 

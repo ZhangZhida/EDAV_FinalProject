@@ -5,6 +5,6 @@ account: yourbestcollegechoice
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 571737
-bundleId: 1701633
+bundleId: 1701674
 url: https://yourbestcollegechoice.shinyapps.io/final_proj/
-when: 1542242206.07079
+when: 1542244497.92732
