@@ -1,0 +1,36 @@
+Name,Description
+campus_id,campus id
+college_id,college id
+main_campus,"whether this is main campus (1=yes, 2=no)"
+num_branch,number of campuses
+name,name
+city,city
+state,state
+zip,zip code
+predominant_degree,"predominant degree awarded(0= Not classified,1= Predominantly certificate-degree granting,2= Predominantly associate's-degree granting,3= Predominantly bachelor's-degree granting,4= Entirely graduate-degree granting)"
+highest_degree,"highest degree awarded(0=Non-degree-granting,1= Certificate degree,2= Associate degree,3= Bachelor's degree,4= Graduate degree)"
+ownership,"ownership (1=public, 2=nonprofit, 3=profit)"
+sat_avg,mean SAT score
+admission_rate,% of students admitted
+tuition_instate,in-state tuition
+tuition_out,out-of-state tuition
+pct_loan,% of undergraduates who received a federal loan in the academic year
+avg_faculty_salary,mean faculty salary
+pct_faculty,% of full-time faculty
+num_undergrad,undergraduate population
+num_grad,graduate populataion
+completion_rate,% of students that graduated within 6 years
+avg_family_income,mean family income
+median_familty_income,median family income
+avg_10yr_salary,mean salary of students 10 years after starting college
+med_10yr_salary,median salary of students 10 years after starting college
+pct_female,% of female students 
+race_white,% of White students
+race_black,% of Black students
+race_hispanic,% of Hispanic students
+race_asian,% of Asian students
+race_native,% of Native American students
+race_pacific,% of Native Hawaiian/Pacific Islander students
+race_2more,% of students who have 2 more races
+race_nonresident,% of students who are non-resident aliens
+race_unknown,% of students whose race is unknown

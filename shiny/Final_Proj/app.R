@@ -14,6 +14,7 @@
 library(shiny)
 library(shinydashboard)
 library(DT)
+library(xlsx)
 
 # Define UI for application that draws a histogram
 ui <- dashboardPage(
@@ -51,14 +52,20 @@ ui <- dashboardPage(
         fluidPage(
           fluidRow(
             column(12,
-                   dataTableOutput('table')
+                   dataTableOutput('table_raw')
             )
           )
         )
       ),
       tabItem(
         tabName = "data_description",
-        h2("data description")
+        fluidPage(
+          fluidRow(
+            column(12,
+                   tableOutput('table_description')
+            )
+          )
+        )
       ),
       tabItem(
         tabName = "admission", 
@@ -116,12 +123,12 @@ server <- function(input, output) {
   })
   
   # render table
-  output$table <- renderDT(
-    readRDS('college.rds') , options = list(scrollX = TRUE, autoWidth=TRUE)
+  output$table_raw <- renderDT(
+    readRDS('data/college.rds') , options = list(scrollX = TRUE, autoWidth=TRUE)
   )
-  # output$table <- renderDataTable({
-  #   college <- readRDS('college.rds')
-  # })
+  output$table_description <- renderTable({
+    read.csv("data/dictionary.csv")
+  })
 }
 
 
