@@ -6,6 +6,10 @@
 #
 #    http://shiny.rstudio.com/
 #
+# To deploy the app, run
+#   library(rsconnect)
+#   deployApp("/home/zhida/Desktop/STAT5702EDAV/finalproject/shiny/Final_Proj")
+
 
 library(shiny)
 library(shinydashboard)
@@ -16,17 +20,42 @@ ui <- dashboardPage(
   
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Admission", tabName = "admission", icon = icon("dashboard")),
-      menuItem("Affordability", tabName = "affordability", icon = icon("dashboard")),
-      menuItem("Education Quality", tabName = "quality", icon = icon("dashboard")),
-      menuItem("Diversity", tabName = "diversity", icon = icon("dashboard")),
-      menuItem("Earnings", tabName = "earnings", icon = icon("dashboard")),
-      menuItem("Completion", tabName = "completion", icon = icon("dashboard"))
+      menuItem("Introduction", tabName = "introduction", icon = icon("info")),
+      
+      menuItem("Data", tabName = "data", icon = icon("database"),
+        menuSubItem("Data Description", tabName = "data_description", icon = icon("angle-right"))
+      ),
+      menuItem("Cost", tabName = "cost", icon = icon("th"),
+        menuSubItem("Admission", tabName = "admission", icon = icon("angle-right")),
+        menuSubItem("Affordability", tabName = "affordability", icon = icon("angle-right"))
+      ),
+      menuItem("Outcome", tabName = "outcome", icon = icon("check"),
+         menuSubItem("Education Quality", tabName = "quality", icon = icon("angle-right")),
+         menuSubItem("Diversity", tabName = "diversity", icon = icon("angle-right")),
+         menuSubItem("Earnings", tabName = "earnings", icon = icon("angle-right")),
+         menuSubItem("Completion", tabName = "completion", icon = icon("angle-right"))
+      )
     )
   ),
   
   dashboardBody(
     tabItems(
+      tabItem(
+        tabName = "introduction",
+        h2("EDAV Final Project")
+      ),
+      tabItem(
+        tabName = "data_description",
+        fluidPage(
+          fluidRow(
+            column(12,
+                   tableOutput('table')
+            )
+          )
+        )
+      ),
+      
+      
       tabItem(
         tabName = "admission", 
         fluidPage(
@@ -70,20 +99,22 @@ ui <- dashboardPage(
   )
 )
 
-# ui <- 
-
 # Define server logic required to draw a histogram
 server <- function(input, output) {
    
-   output$distPlot <- renderPlot({
-      # generate bins based on input$bins from ui.R
-      x    <- faithful[, 2] 
-      bins <- seq(min(x), max(x), length.out = input$bins + 1)
-      
-      # draw the histogram with the specified number of bins
-      hist(x, breaks = bins, col = 'darkgray', border = 'white')
-   })
+  output$distPlot <- renderPlot({
+    # generate bins based on input$bins from ui.R
+    x    <- faithful[, 2] 
+    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    
+    # draw the histogram with the specified number of bins
+    hist(x, breaks = bins, col = 'darkgray', border = 'white')
+  })
+  
+  # render table
+  output$table <- renderTable(iris)
 }
+
 
 # Run the application 
 shinyApp(ui = ui, server = server)
