@@ -45,7 +45,14 @@ ui <- dashboardPage(
     tabItems(
       tabItem(
         tabName = "introduction",
-        h2("EDAV Final Project")
+        fluidPage(
+          fluidRow(
+            h1("EDAV Final Project"),
+            h3('\t Through our project, we would like to provide a way for students and their 
+           families to compare across different colleges based on the cost-outcome tradeoffs
+           catering to their own needs, academic or career goals.')
+          )
+        )
       ),
       tabItem(
         tabName = "raw_data",
