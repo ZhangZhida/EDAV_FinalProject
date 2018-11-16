@@ -15,6 +15,8 @@ library(shiny)
 library(shinydashboard)
 library(DT)
 library(xlsx)
+library(gridExtra)
+library(ggplot2)
 
 # Define UI for application that draws a histogram
 ui <- dashboardPage(
@@ -47,10 +49,15 @@ ui <- dashboardPage(
         tabName = "introduction",
         fluidPage(
           fluidRow(
-            h1("EDAV Final Project"),
-            h3('\t Through our project, we would like to provide a way for students and their 
-           families to compare across different colleges based on the cost-outcome tradeoffs
-           catering to their own needs, academic or career goals.')
+            column(12,
+              h1("EDAV Final Project")
+            ),
+            column(12,
+              h3('\t Through our project, we would like to provide a way for students and their 
+              families to compare across different colleges based on the cost-outcome tradeoffs
+              catering to their own needs, academic or career goals.')
+            )
+            
           )
         )
       ),
@@ -82,19 +89,26 @@ ui <- dashboardPage(
           # titlePanel("Old Faithful Geyser Data"),
           
           # Sidebar with a slider input for number of bins
-          sidebarLayout(
-            sidebarPanel(
-              sliderInput("bins",
-                          "Number of bins:",
-                          min = 1,
-                          max = 50,
-                          value = 30)
-            ),
-            
-            # Show a plot of the generated distribution
-            mainPanel(
-              plotOutput("distPlot")
-            )
+          # sidebarLayout(
+          #   sidebarPanel(
+          #     sliderInput("bins",
+          #                 "Number of bins:",
+          #                 min = 1,
+          #                 max = 50,
+          #                 value = 30)
+          #   ),
+          #   
+          #   # Show a plot of the generated distribution
+          #   mainPanel(
+          #     plotOutput("distPlot"),
+          #     plotOutput("scatterplot_admission")
+          #   )
+          # )
+          mainPanel(
+            h3("Histogram: Admission Rate and SAT Average"),
+            plotOutput("distPlot"),
+            h3("Scatter plot: Admission Rate and SAT Average"),
+            plotOutput("scatterplot_admission")
           )
         )
       ),
@@ -120,14 +134,40 @@ ui <- dashboardPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
    
+  # bar plot, admission
   output$distPlot <- renderPlot({
-    # generate bins based on input$bins from ui.R
-    x    <- faithful[, 2] 
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    # # generate bins based on input$bins from ui.R
+    # x    <- faithful[, 2] 
+    # bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    # 
+    # # draw the histogram with the specified number of bins
+    # hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    college <- readRDS('data/college.rds')
+    college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
     
-    # draw the histogram with the specified number of bins
-    hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    plot_admi <- ggplot(college_no_na, aes(x = admission_rate)) +
+      geom_histogram()
+    
+    plot_sat <- ggplot(college_no_na, aes(x = sat_avg)) +
+      geom_histogram()
+    
+    grid.arrange(plot_admi, plot_sat, ncol = 2)
   })
+  
+  # scatter plot, admission
+  output$scatterplot_admission <- renderPlot({
+    college <- readRDS('data/college.rds')
+    college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
+    sat_avg <- college_no_na$sat_avg
+    admission_rate <- college_no_na$admission_rate
+    
+    baseplt <- ggplot(college_no_na, aes(x = sat_avg, y = admission_rate))
+    baseplt + geom_point(alpha= 0.5) +
+      labs(title = "Scatter Plot", 
+           x = "SAT Average", 
+           y = "Admission Rate")
+  })
+  
   
   # render table
   output$table_raw <- renderDT(
