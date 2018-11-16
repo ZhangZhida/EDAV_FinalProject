@@ -9,7 +9,7 @@ Please refer to https://docs.google.com/document/d/1eWRJlLCUo1Zxn9n_YIpEWa-OOgG2
 https://yourbestcollegechoice.shinyapps.io/final_proj/
 
 # Collaborators
-- Zhiyuan Zhao (zz2592)
-- Qi Feng (qf2140)
-- Zhida Zhang (zz2578)
+- Zhiyuan Zhao
+- Qi Feng
+- Zhida Zhang
 
