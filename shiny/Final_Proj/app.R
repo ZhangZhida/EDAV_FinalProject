@@ -189,7 +189,8 @@ server <- function(input, output) {
       labs(title = "Scatter Plot", 
            x = "SAT Average", 
            y = "Admission Rate") +
-      geom_point(data = selected_one, fill = 'red', shape = 24, size = 4)
+      geom_point(data = selected_one, fill = 'red', shape = 24, size = 4) +
+      geom_text(data = selected_one, aes(label = name), vjust = -0.5)
     
   })
   
