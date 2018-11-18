@@ -61,17 +61,17 @@ ui <- dashboardPage(
           fluidRow(
             column(6, 
               h3("Scatterplot: Admission rate & SAT average"),
-              plotOutput("admission_scatterplot", height = 500, 
+              plotOutput("admission_scatterplot", height = 400, 
                 click = "admission_scatterplot_click",
                 brush = brushOpts(
                   id = "admission_scatterplot_brush"
                 )
               )
             ),
-            column(6, height = 500,
+            column(6, 
               h3("Selected universities"),
               # verbatimTextOutput("admission_scatterplot_brush_info")
-              dataTableOutput('admission_scatterplot_brush_info')
+              div(dataTableOutput('admission_scatterplot_brush_info'), style = "font-size:90%") 
             )
           )
         )
@@ -149,6 +149,7 @@ ui <- dashboardPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   college <- readRDS('data/college.rds')
+  college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
   
   # bar plot, admission
   output$distPlot <- renderPlot({
@@ -160,7 +161,7 @@ server <- function(input, output) {
     # hist(x, breaks = bins, col = 'darkgray', border = 'white')
     
     # college <- readRDS('data/college.rds')
-    college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
+    # college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
     
     plot_admi <- ggplot(college_no_na, aes(x = admission_rate)) +
       geom_histogram()
@@ -174,7 +175,7 @@ server <- function(input, output) {
   # scatter plot, admission
   output$admission_scatterplot <- renderPlot({
     # college <- readRDS('data/college.rds')
-    college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
+    # college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
     sat_avg <- college_no_na$sat_avg
     admission_rate <- college_no_na$admission_rate
     
@@ -182,7 +183,9 @@ server <- function(input, output) {
     baseplt + geom_point(alpha= 0.5) +
       labs(title = "Scatter Plot", 
            x = "SAT Average", 
-           y = "Admission Rate")
+           y = "Admission Rate") +
+      geom_point(data = college_no_na[1, ], color = 'red')
+    
   })
   
   
@@ -201,13 +204,14 @@ server <- function(input, output) {
   #   college_no_na
   # })
   output$admission_scatterplot_brush_info <- renderDT({
-    college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
-    selectedPoints <- brushedPoints(college_no_na, input$admission_scatterplot_brush)
+    # college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
+    college_no_na_show <- college_no_na[, c('name', 'sat_avg', 'admission_rate')]
+    selectedPoints <- brushedPoints(college_no_na_show, input$admission_scatterplot_brush)
     if(nrow(selectedPoints) == 0)
       return()
     selectedPoints
-  }, options = list(scrollX = TRUE, autoWidth=TRUE, pageLength = 5))
-
+  }, options = list(scrollX = TRUE, autoWidth=FALSE, pageLength = 10, processing = TRUE), selection = 'single')
+  
   
   
 
