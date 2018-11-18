@@ -51,13 +51,28 @@ ui <- dashboardPage(
           fluidRow(
             column(12,
               h1("EDAV Final Project")
-            ),
-            column(12,
-              h3('\t Through our project, we would like to provide a way for students and their 
-              families to compare across different colleges based on the cost-outcome tradeoffs
-              catering to their own needs, academic or career goals.')
             )
-            
+            # column(12,
+            #   h3('\t Through our project, we would like to provide a way for students and their 
+            #   families to compare across different colleges based on the cost-outcome tradeoffs
+            #   catering to their own needs, academic or career goals.')
+            # )
+          ),
+          fluidRow(
+            column(6, 
+              h3("Scatterplot: Admission rate & SAT average"),
+              plotOutput("admission_scatterplot", height = 500, 
+                click = "admission_scatterplot_click",
+                brush = brushOpts(
+                  id = "admission_scatterplot_brush"
+                )
+              )
+            ),
+            column(6, height = 500,
+              h3("Selected universities"),
+              # verbatimTextOutput("admission_scatterplot_brush_info")
+              dataTableOutput('admission_scatterplot_brush_info')
+            )
           )
         )
       ),
@@ -133,7 +148,8 @@ ui <- dashboardPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-   
+  college <- readRDS('data/college.rds')
+  
   # bar plot, admission
   output$distPlot <- renderPlot({
     # # generate bins based on input$bins from ui.R
@@ -142,7 +158,8 @@ server <- function(input, output) {
     # 
     # # draw the histogram with the specified number of bins
     # hist(x, breaks = bins, col = 'darkgray', border = 'white')
-    college <- readRDS('data/college.rds')
+    
+    # college <- readRDS('data/college.rds')
     college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
     
     plot_admi <- ggplot(college_no_na, aes(x = admission_rate)) +
@@ -155,8 +172,8 @@ server <- function(input, output) {
   })
   
   # scatter plot, admission
-  output$scatterplot_admission <- renderPlot({
-    college <- readRDS('data/college.rds')
+  output$admission_scatterplot <- renderPlot({
+    # college <- readRDS('data/college.rds')
     college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
     sat_avg <- college_no_na$sat_avg
     admission_rate <- college_no_na$admission_rate
@@ -171,11 +188,29 @@ server <- function(input, output) {
   
   # render table
   output$table_raw <- renderDT(
-    readRDS('data/college.rds') , options = list(scrollX = TRUE, autoWidth=TRUE)
+    # readRDS('data/college.rds') , options = list(scrollX = TRUE, autoWidth=TRUE)
+    college, options = list(scrollX = TRUE, autoWidth=TRUE)
   )
   output$table_description <- renderTable({
     read.csv("data/dictionary.csv")
   })
+  
+  # selected universities
+  # college_no_na <- reactive({
+  #   college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
+  #   college_no_na
+  # })
+  output$admission_scatterplot_brush_info <- renderDT({
+    college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
+    selectedPoints <- brushedPoints(college_no_na, input$admission_scatterplot_brush)
+    if(nrow(selectedPoints) == 0)
+      return()
+    selectedPoints
+  }, options = list(scrollX = TRUE, autoWidth=TRUE, pageLength = 5))
+
+  
+  
+
 }
 
 
