@@ -179,12 +179,17 @@ server <- function(input, output) {
     sat_avg <- college_no_na$sat_avg
     admission_rate <- college_no_na$admission_rate
     
+    selectedPoints <- brushedPoints(college_no_na, input$admission_scatterplot_brush)
+    s <- input$admission_scatterplot_brush_info_rows_selected
+    selected_one_str <- selectedPoints[s, c('college_id')]
+    selected_one <- college_no_na[which(college_no_na['college_id'] == as.character(selected_one_str)),]
+    
     baseplt <- ggplot(college_no_na, aes(x = sat_avg, y = admission_rate))
     baseplt + geom_point(alpha= 0.5) +
       labs(title = "Scatter Plot", 
            x = "SAT Average", 
            y = "Admission Rate") +
-      geom_point(data = college_no_na[1, ], color = 'red')
+      geom_point(data = selected_one, fill = 'red', shape = 24, size = 4)
     
   })
   
@@ -211,6 +216,7 @@ server <- function(input, output) {
       return()
     selectedPoints
   }, options = list(scrollX = TRUE, autoWidth=FALSE, pageLength = 10, processing = TRUE), selection = 'single')
+  
   
   
   
