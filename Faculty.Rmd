@@ -1,0 +1,62 @@
+---
+title: "Faculty"
+author: "Qi Feng"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+library(knitr)
+library(kableExtra)
+```
+
+# Full-time Faculty
+More and more colleges are hiring part-time faculty as a means of cost-cutting. However, we should emphasize the importance of `full-time faculty` as it is closely related to students' academic performance. For one thing, full-time faculty members are more stable in terms of curriculum teaching and planning. Because of high flexibility, they are also more likely to have higher levels of availability for students after class.
+
+Using the feature `pct_faculty`, *percentage of full-time faculty*, we see that the distribution of % of full-time faculty is slightly positively skewed with a mode of 1.00. Thus, most colleges have entirely full-time faculty members. The median is 0.54 so that colleges have a median of 54% full-time faculty members. 
+
+```{r}
+library(readr)
+library(tidyverse)
+library(reshape)
+library(ggplot2)
+library(gridExtra)
+
+college = read_rds("college.rds")
+faculty = college %>% select(name, avg_faculty_salary, pct_faculty, num_undergrad, num_grad)
+#summary(faculty$pct_faculty)
+
+ge1 = ggplot(faculty, aes(x = pct_faculty)) + 
+  geom_histogram(na.rm = TRUE, fill = "lightblue", color = "black")
+
+ge2 = ggplot(faculty, aes(x = "", y = pct_faculty)) + 
+  geom_boxplot(na.rm = TRUE) + coord_flip() + 
+  theme(axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.title.y = element_blank()) +
+  labs(y = "% of full-time faculty")
+grid.arrange(ge1, ge2)
+```
+
+Colleges with the highest % of full-time faculty are listed below.
+```{r}
+kable(head(na.omit(faculty) %>% arrange(-pct_faculty) %>% select(name, pct_faculty)))
+```
+
+## Associations with Full-time Faculty
+For further analysis of `full-time faculty`, we propose two research questions:
+
+1. Is % of full-time faculty associated with the number of undergraduates/graduates?
+2. Is % of full-time faculty associated with mean faculty salary? 
+
+To investigate the relationships, we obtained the following scatterplot matrix. We conclude that there is barely any relationship between % of full-time faculty and other variables we proposed, as no pattern can be observed from the scatterplots and the correlations are negligible.
+
+```{r}
+GGally::ggpairs(faculty, columns = colnames(faculty %>% select(-name))) +   
+  theme(axis.text.x = element_text(size = rel(0.8)),
+        axis.text.y = element_text(size = rel(0.8)),
+        strip.text = element_text(size = rel(0.8)))
+```
