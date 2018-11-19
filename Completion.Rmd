@@ -1,0 +1,163 @@
+---
+title: "Completion"
+author: "Qi Feng"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+library(knitr)
+library(kableExtra)
+```
+
+# 1. Completion Rate
+`Completion rate` is recorded as *percentage of students that graduated within 6 years* in our dataset. The overall distribution of completion rate is roughly symmetric, with mode and median both around 0.47. Thus, for most colleges, just under half (47%) of students graduated within 6 years of starting college.
+
+```{r}
+library(readr)
+library(tidyverse)
+library(reshape)
+library(ggplot2)
+library(gridExtra)
+
+college = read_rds("college.rds")
+
+gc1 = ggplot(college, aes(x = completion_rate)) + 
+  geom_histogram(na.rm = TRUE, fill = "lightblue", color = "black")
+
+gc2 = ggplot(college, aes(x = "", y = completion_rate)) + 
+  geom_boxplot(na.rm = TRUE) + coord_flip() + 
+  theme(axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.title.y = element_blank())
+
+grid.arrange(gc1, gc2)
+```
+
+The colleges with the highest completion rates are listed below in *Table 1*.
+```{r}
+kable(head(na.omit(college) %>% arrange(-completion_rate) %>% select(name, completion_rate)),
+      caption = "Colleges with Highest Completion Rate")
+```
+
+## Completion Rate by Institution Type
+Taking institution type into consideration, we can see that private *non-profit* schools have the best completion rates (highest median) while private *for-profit* schools have the worst. Only non-profit schools have higher median completion rate than the overall median. Note that unlike *non-profit* and *for-profit* schools, public schools have neither a completion rate of 0.00 or 1.00. 
+
+```{r}
+comp_rate = college %>% select(name, ownership, completion_rate)
+levels(comp_rate$ownership) = c("public","nonprofit","profit")
+
+med = median(comp_rate$completion_rate, na.rm = TRUE)
+
+ggplot(comp_rate, aes(x = fct_reorder(`ownership`, completion_rate, median, na.rm = TRUE), 
+                      y = completion_rate)) + geom_boxplot() + coord_flip() + 
+  geom_hline(yintercept = med, color = "red", linetype = 2) +
+  labs(x = "Ownership", y = "Completion Rate", title = "Completion Rate by Ownership",
+       subtitle = paste0("Overall median = ", round(med,2), " (shown in red)")) +
+  theme(plot.subtitle = element_text(color = "red"))
+```
+
+#2. Degree Awarded
+## Predominant Degree
+Overall, *Certificate degree* is the most frequently awarded while *Graduate degree* is the least. Such a result is reasonable as certificate programs are less demanding than degree programs. Also, since graduate population is usually smaller than undergraduate population, we shall expect that fewer students receive a *Graduate degree*.
+
+```{r}
+degree = college %>% select(name, ownership, predominant_degree, highest_degree)
+levels(degree$ownership) = c("public","nonprofit","profit")
+levels(degree$predominant_degree) = c("Not classified", "Certificate degree", "Associate degree", "Bachelor’s degree", "Graduate degree")
+levels(degree$highest_degree) = c("Non-degree-granting", "Certificate degree", "Associate degree","Bachelor’s degree","Graduate degree")
+
+gc3 = ggplot(degree, aes(x = fct_reorder(predominant_degree, predominant_degree, function(x){length(x)}, .desc = TRUE))) + 
+  geom_bar(fill = "lightblue", color = "black") +
+  labs(x = "predominant degree") + 
+  theme(axis.ticks.x = element_blank(), 
+        panel.grid.major.x = element_blank(),
+        text = element_text(size = 10)) + 
+  scale_y_continuous(breaks = seq(0, 3500, 500))
+gc3
+```
+
+### Predominant Degree by Ownership
+Predominant degree seems to be associated with `ownership` as the boxes in the mosaic plot below are not proportional. Specifically, we can infer that the predominant degree awarded is mostly
+
++ *Certificate degree* for private *for-profit* schools; 
++ *Associate degree* for *public* schools;
++ *Bachelor's degree* for private *non-profit* schools.
+
+```{r fig.height=5}
+library(grid)
+library(vcd)
+library(RColorBrewer)
+fillcolors = brewer.pal(5, "Set1")    
+
+# Sort predominant_degree by frequency
+count1 = degree %>% group_by(ownership, predominant_degree) %>% summarize(Freq = n()) 
+pred_deg_order = count1 %>% group_by(predominant_degree) %>% 
+  summarize(sum = sum(Freq)) %>% arrange(-sum) %>% 
+  pull(predominant_degree)
+count1$predominant_degree = factor(count1$predominant_degree, levels = pred_deg_order)
+
+# Sort ownership by frequency
+ownership_order = count1 %>% group_by(ownership) %>% 
+  summarize(sum = sum(Freq)) %>% arrange(-sum) %>% 
+  pull(ownership)
+count1$ownership = factor(count1$ownership, levels = ownership_order)
+
+gc4 = mosaic(predominant_degree~ownership, count1, direction = c("v", "h"),
+             gp = gpar(fill = fillcolors),
+             labeling = labeling_border(gp_labels = gpar(fontsize = 6),
+                                        rot_labels = c(0, 0, 0, 0), 
+                                        offset_varnames = c(0,0,0,2),
+                                        offset_labels = c(0,0,0,2.5)),  
+             main = "Predominant Degree vs. Ownership")
+gc4
+```
+
+## Highest Degree
+
+Like `predominant degree`, *Certificate degree* is the most frequently awarded highest degree, but now *non-degree-granting* is the least. Such a result shows evidence for the extensive size of professional schools that offer mainly *Certificate degree* as their highest degree. For other schools, we shall expect *Graduate degree* as the most commonly awarded highest degree.
+
+```{r}
+gc5 = ggplot(degree, aes(x = fct_reorder(highest_degree, highest_degree, function(x){length(x)}, .desc = TRUE))) + 
+  geom_bar(fill = "lightblue", color = "black") +
+  labs(x = "highest degree") + 
+  theme(axis.ticks.x = element_blank(), 
+        panel.grid.major.x = element_blank(),
+        text = element_text(size = 10)) + 
+  scale_y_continuous(breaks = seq(0, 3000, 500))
+gc5
+```
+
+### Highest Degree by Ownership
+Like `predominant degree`, highest degree is also associated with `ownership`. Specifically, we find that the highest degree is mostly
+
++ *Certificate degree* for private *for-profit* schools; 
++ *Associate degree* for *public* schools;
++ *Graduate degree* for private *non-profit* schools.
+
+```{r fig.height=5}
+# Sort highest_degree by frequency
+count2 = degree %>% group_by(ownership, highest_degree) %>% summarize(Freq = n()) 
+high_deg_order = count2 %>% group_by(highest_degree) %>% 
+  summarize(sum = sum(Freq)) %>% arrange(-sum) %>% 
+  pull(highest_degree)
+count2$highest_degree = factor(count2$highest_degree, levels = high_deg_order)
+
+# Sort ownership by frequency
+ownership_order2 = count2 %>% group_by(ownership) %>% 
+  summarize(sum = sum(Freq)) %>% arrange(-sum) %>% 
+  pull(ownership)
+count2$ownership = factor(count2$ownership, levels = ownership_order2)
+
+gc4 = mosaic(highest_degree~ownership, count2, direction = c("v", "h"),
+             gp = gpar(fill = fillcolors),
+             labeling = labeling_border(gp_labels = gpar(fontsize = 6),
+                                        rot_labels = c(0, 0, 0, 0), 
+                                        offset_varnames = c(0,0,0,2),
+                                        offset_labels = c(0,0,0,2.8)),  
+             main = "Highest Degree vs. Ownership")
+gc4
+```
