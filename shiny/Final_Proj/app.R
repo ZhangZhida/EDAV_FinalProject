@@ -50,18 +50,8 @@ ui <- dashboardPage(
         tabName = "dashboard",
         fluidPage(
           fluidRow(
-            column(12,
-              h1("EDAV Final Project")
-            )
-            # column(12,
-            #   h3('\t Through our project, we would like to provide a way for students and their 
-            #   families to compare across different colleges based on the cost-outcome tradeoffs
-            #   catering to their own needs, academic or career goals.')
-            # )
-          ),
-          fluidRow(
             column(6, 
-              h3("Scatterplot: Admission rate & SAT average"),
+              h4("Scatterplot: Admission rate & SAT average"),
               plotOutput("admission_scatterplot", height = 400, 
                 click = "admission_scatterplot_click",
                 brush = brushOpts(
@@ -70,23 +60,23 @@ ui <- dashboardPage(
               )
             ),
             column(6, 
-              h3("Selected universities"),
+              h4("Selected universities"),
               # verbatimTextOutput("admission_scatterplot_brush_info")
-              div(dataTableOutput('admission_scatterplot_brush_info'), style = "font-size:90%") 
+              div(dataTableOutput('admission_scatterplot_brush_info'), style = "font-size:72%") 
             )
           ),
           fluidRow(
             column(3,
-              plotOutput('tuition', height = 270)
-            ),
-            column(3,
-              plotOutput('diversity', height = 270)       
+              plotOutput('avg_10yr_salary', height = 270)
             ),
             column(3,
               plotOutput('faculty', height = 270)       
             ),
             column(3,
-              plotOutput('avg_10yr_salary', height = 270)       
+              plotOutput('diversity', height = 270)       
+            ),
+            column(3,
+              plotOutput('completion', height = 270)       
             )
           )
         )
@@ -166,22 +156,22 @@ server <- function(input, output) {
   college <- readRDS('data/college.rds')
   college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
   
-  # tuition
-  output$tuition <- renderPlot({
-    college_tuition <- college[c("tuition_instate", "tuition_out")]
-    
-    selectedPoints <- brushedPoints(college_no_na, input$admission_scatterplot_brush)
-    s <- input$admission_scatterplot_brush_info_rows_selected
-    selected_one_str <- selectedPoints[s, c('college_id')]
-    selected_one <- college_no_na[which(college_no_na['college_id'] == as.character(selected_one_str)),]
-    
-    BIN_INTEV <- 2000
-    cond <- as.integer(college_tuition$tuition_instate / BIN_INTEV) * BIN_INTEV == as.integer(selected_one$tuition_instate / BIN_INTEV) * BIN_INTEV
-    
-    ggplot(college_tuition, aes(x=tuition_instate)) + 
-      geom_histogram(data=subset(college_tuition, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
-      geom_histogram(data=subset(college_tuition, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue")
-  })
+  # # tuition
+  # output$tuition <- renderPlot({
+  #   college_tuition <- college[c("tuition_instate", "tuition_out")]
+  #   
+  #   selectedPoints <- brushedPoints(college_no_na, input$admission_scatterplot_brush)
+  #   s <- input$admission_scatterplot_brush_info_rows_selected
+  #   selected_one_str <- selectedPoints[s, c('college_id')]
+  #   selected_one <- college_no_na[which(college_no_na['college_id'] == as.character(selected_one_str)),]
+  #   
+  #   BIN_INTEV <- 2000
+  #   cond <- as.integer(college_tuition$tuition_instate / BIN_INTEV) * BIN_INTEV == as.integer(selected_one$tuition_instate / BIN_INTEV) * BIN_INTEV
+  #   
+  #   ggplot(college_tuition, aes(x=tuition_instate)) + 
+  #     geom_histogram(data=subset(college_tuition, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
+  #     geom_histogram(data=subset(college_tuition, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue")
+  # })
   
   # diversity
   output$diversity <- renderPlot({
@@ -237,6 +227,23 @@ server <- function(input, output) {
     ggplot(college_avg_10yr_salary, aes(x=avg_10yr_salary)) + 
       geom_histogram(data=subset(college_avg_10yr_salary, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
       geom_histogram(data=subset(college_avg_10yr_salary, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue")
+  })
+  
+  
+  # completion
+  output$completion <- renderPlot({
+    college_completion <- college[c("college_id", "completion_rate")]
+    
+    selectedPoints <- brushedPoints(college_no_na, input$admission_scatterplot_brush)
+    s <- input$admission_scatterplot_brush_info_rows_selected
+    selected_one_str <- selectedPoints[s, c('college_id')]
+    
+    BIN_INTEV <- 0.03
+    cond <- as.integer(college_completion$completion_rate / BIN_INTEV) * BIN_INTEV == as.integer(college_completion[which(college_completion$college_id == as.character(selected_one_str)), ]$completion_rate / BIN_INTEV) * BIN_INTEV
+    
+    ggplot(college_completion, aes(x=completion_rate)) + 
+      geom_histogram(data=subset(college_completion, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
+      geom_histogram(data=subset(college_completion, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue")
   })
   
   # bar plot, admission
@@ -299,7 +306,7 @@ server <- function(input, output) {
   # })
   output$admission_scatterplot_brush_info <- renderDT({
     # college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
-    college_no_na_show <- college_no_na[, c('name', 'sat_avg', 'admission_rate')]
+    college_no_na_show <- college_no_na[, c('name', 'sat_avg', 'admission_rate', 'tuition_instate', 'tuition_out')]
     selectedPoints <- brushedPoints(college_no_na_show, input$admission_scatterplot_brush)
     if(nrow(selectedPoints) == 0)
       return()
