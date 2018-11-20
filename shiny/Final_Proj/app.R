@@ -84,6 +84,9 @@ ui <- dashboardPage(
             ),
             column(3,
               plotOutput('faculty', height = 270)       
+            ),
+            column(3,
+              plotOutput('avg_10yr_salary', height = 270)       
             )
           )
         )
@@ -166,21 +169,18 @@ server <- function(input, output) {
   # tuition
   output$tuition <- renderPlot({
     college_tuition <- college[c("tuition_instate", "tuition_out")]
-    # college_tuition$tuition_instate <- (as.integer(college_tuition$tuition_instate / 1000) + 0.1)
-    college_tuition$tuition_out <- college_tuition$tuition_out / 1000
-    
-    
     
     selectedPoints <- brushedPoints(college_no_na, input$admission_scatterplot_brush)
     s <- input$admission_scatterplot_brush_info_rows_selected
     selected_one_str <- selectedPoints[s, c('college_id')]
     selected_one <- college_no_na[which(college_no_na['college_id'] == as.character(selected_one_str)),]
     
-    # cond <- college_tuition$tuition_instate == as.integer(selected_one$tuition_instate / 1000) * 1000
-    cond <- as.integer(college_tuition$tuition_instate / 2000) * 2000 == as.integer(selected_one$tuition_instate / 2000) * 2000
+    BIN_INTEV <- 2000
+    cond <- as.integer(college_tuition$tuition_instate / BIN_INTEV) * BIN_INTEV == as.integer(selected_one$tuition_instate / BIN_INTEV) * BIN_INTEV
+    
     ggplot(college_tuition, aes(x=tuition_instate)) + 
-      geom_histogram(data=subset(college_tuition, cond == FALSE), binwidth = 2000, boundary = 0, closed = "left", fill = "lightblue") +
-      geom_histogram(data=subset(college_tuition, cond == TRUE), binwidth = 2000, boundary = 0, closed = "left", fill = "blue")
+      geom_histogram(data=subset(college_tuition, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
+      geom_histogram(data=subset(college_tuition, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue")
   })
   
   # diversity
@@ -199,11 +199,12 @@ server <- function(input, output) {
     s <- input$admission_scatterplot_brush_info_rows_selected
     selected_one_str <- selectedPoints[s, c('college_id')]
     
-    cond <- as.integer(race$RDI / 0.03) * 0.03 == as.integer(race[which(race$college_id == as.character(selected_one_str)), ]$RDI / 0.03) * 0.03
+    BIN_INTEV <- 0.03
+    cond <- as.integer(race$RDI / BIN_INTEV) * BIN_INTEV == as.integer(race[which(race$college_id == as.character(selected_one_str)), ]$RDI / BIN_INTEV) * BIN_INTEV
 
     ggplot(race, aes(x=RDI)) + 
-      geom_histogram(data = subset(race, cond == FALSE), binwidth = 0.03, boundary = 0, closed = "left", fill = "lightblue") +
-      geom_histogram(data = subset(race, cond == TRUE), binwidth = 0.03, boundary = 0, closed = "left", fill = "blue")
+      geom_histogram(data = subset(race, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
+      geom_histogram(data = subset(race, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue")
   })
   
   # faculty
@@ -214,13 +215,29 @@ server <- function(input, output) {
     s <- input$admission_scatterplot_brush_info_rows_selected
     selected_one_str <- selectedPoints[s, c('college_id')]
     
-    cond <- as.integer(college_faculty$pct_faculty / 0.03) * 0.03 == as.integer(college_faculty[which(college_faculty$college_id == as.character(selected_one_str)), ]$pct_faculty / 0.03) * 0.03
+    BIN_INTEV <- 0.03
+    cond <- as.integer(college_faculty$pct_faculty / BIN_INTEV) * BIN_INTEV == as.integer(college_faculty[which(college_faculty$college_id == as.character(selected_one_str)), ]$pct_faculty / BIN_INTEV) * BIN_INTEV
     
     ggplot(college_faculty, aes(x=pct_faculty)) + 
-      geom_histogram(data=subset(college_faculty, cond == FALSE), binwidth = 0.03, boundary = 0, closed = "left", fill = "lightblue") +
-      geom_histogram(data=subset(college_faculty, cond == TRUE), binwidth = 0.03, boundary = 0, closed = "left", fill = "blue")
+      geom_histogram(data=subset(college_faculty, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
+      geom_histogram(data=subset(college_faculty, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue")
   })
   
+  # avg_10yr_salary
+  output$avg_10yr_salary <- renderPlot({
+    college_avg_10yr_salary<- college[c("college_id", "avg_10yr_salary")]
+    
+    selectedPoints <- brushedPoints(college_no_na, input$admission_scatterplot_brush)
+    s <- input$admission_scatterplot_brush_info_rows_selected
+    selected_one_str <- selectedPoints[s, c('college_id')]
+    
+    BIN_INTEV <- 5000
+    cond <- as.integer(college_avg_10yr_salary$avg_10yr_salary / BIN_INTEV) * BIN_INTEV == as.integer(college_avg_10yr_salary[which(college_avg_10yr_salary$college_id == as.character(selected_one_str)), ]$avg_10yr_salary / BIN_INTEV) * BIN_INTEV
+    
+    ggplot(college_avg_10yr_salary, aes(x=avg_10yr_salary)) + 
+      geom_histogram(data=subset(college_avg_10yr_salary, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
+      geom_histogram(data=subset(college_avg_10yr_salary, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue")
+  })
   
   # bar plot, admission
   output$distPlot <- renderPlot({
