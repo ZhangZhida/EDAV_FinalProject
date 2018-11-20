@@ -1,0 +1,64 @@
+---
+title: "Cost-value Trade-off"
+author: "Qi Feng"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+```
+
+Eventually, to explore the cost-value trade-off, we obtained the following scatterplot matrix. We conclude the correlation to be *strong*, if $r \geq 0.7$; *weak*, if $r \leq 0.3$; *moderate* otherwise. Some key observations are:
+
+* **Multicollinearity** exists for both the cost and value variables such that
+    + `sat_avg` is moderately positively associated with `tuition_instate`/`tuition_out`
+    + `sat_avg` is moderately negatively associated with `admission_rate` 
+    + `tuition_instate` is strongly positively associated with `tuition_out`
+    + `completion_rate` is moderately positively associated with `avg_10yr_salary`
+* `sat_avg` is strongly positively associated with both `completion_rate` and `avg_10yr_salary`
+* `admission rate` is moderately negatively associated with both `completion_rate` and `avg_10yr_salary`
+* `tuition_instate` is moderately positively associated with both `completion_rate` and `avg_10yr_salary`
+* `tuition_out` is moderately positively associated with both `completion_rate` and `avg_10yr_salary`
+
+```{r}
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(extracat)
+library(GGally)
+
+college = read_rds("college.rds")
+
+##### For individual file: duplicate code with Diversity.Rmd
+race_cat = c("race_white", "race_black", "race_hispanic", 
+             "race_asian", "race_native", "race_pacific", 
+             "race_2more", "race_nonresident", "race_unknown")
+race = college %>% select ("name", race_cat)
+colnames(race) = c("name", "White", "Black", "Hispanic", "Asian",
+                   "Native", "Pacific", "Two_more", "Non_resident", "Unknown")
+race = race %>% mutate(RDI = 1- {(race$White)^2 + (race$Black)^2 + 
+    (race$Hispanic)^2 + (race$Asian)^2 + (race$Native)^2 + (race$Pacific)^2 + 
+    (race$Two_more)^2 + (race$Non_resident)^2 + (race$Unknown)^2})
+gender = college %>% select(name, pct_female) %>% 
+  mutate(pct_male = 1-pct_female)
+colnames(gender) = c("name", "female", "male")
+gender = gender %>% mutate(GDI = 1-female^2-male^2)
+##### 
+
+cost_value = college %>% 
+  select("sat_avg","admission_rate","tuition_instate",
+         "tuition_out","pct_faculty", "completion_rate", "avg_10yr_salary") %>%
+  mutate(GDI = gender$GDI) %>%
+  mutate(RDI = race$RDI)
+
+cost = c("sat_avg", "admission_rate", "tuition_instate", "tuition_out")
+value = c("pct_faculty", "completion_rate", "avg_10yr_salary", "GDI", "RDI")
+
+ggpairs(cost_value, 
+                upper = list(continuous = wrap("cor", size = 3, alignPercent = 1))) +   
+  theme(axis.text.x = element_text(size = rel(0.5)),
+        axis.text.y = element_text(size = rel(0.5)),
+        strip.text = element_text(size = rel(0.5)))
+```
