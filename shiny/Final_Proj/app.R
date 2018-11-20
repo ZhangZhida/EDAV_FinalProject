@@ -24,7 +24,7 @@ ui <- dashboardPage(
   
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Introduction", tabName = "introduction", icon = icon("info")),
+      menuItem("Dashboard", tabName = "dashboard", icon = icon("info")),
       
       menuItem("Data", tabName = "data", icon = icon("database"),
         menuSubItem("Raw Data", tabName = "raw_data", icon =  icon("angle-right")),
@@ -46,7 +46,7 @@ ui <- dashboardPage(
   dashboardBody(
     tabItems(
       tabItem(
-        tabName = "introduction",
+        tabName = "dashboard",
         fluidPage(
           fluidRow(
             column(12,
@@ -72,6 +72,11 @@ ui <- dashboardPage(
               h3("Selected universities"),
               # verbatimTextOutput("admission_scatterplot_brush_info")
               div(dataTableOutput('admission_scatterplot_brush_info'), style = "font-size:90%") 
+            )
+          ),
+          fluidRow(
+            column(3,
+              plotOutput('tuition')
             )
           )
         )
@@ -150,6 +155,27 @@ ui <- dashboardPage(
 server <- function(input, output) {
   college <- readRDS('data/college.rds')
   college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
+  
+  # tuition
+  output$tuition <- renderPlot({
+    college_tuition <- college[c("tuition_instate", "tuition_out")]
+    # college_tuition$tuition_instate <- (as.integer(college_tuition$tuition_instate / 1000) + 0.1)
+    college_tuition$tuition_out <- college_tuition$tuition_out / 1000
+    
+    
+    
+    selectedPoints <- brushedPoints(college_no_na, input$admission_scatterplot_brush)
+    s <- input$admission_scatterplot_brush_info_rows_selected
+    selected_one_str <- selectedPoints[s, c('college_id')]
+    selected_one <- college_no_na[which(college_no_na['college_id'] == as.character(selected_one_str)),]
+    
+    # cond <- college_tuition$tuition_instate == as.integer(selected_one$tuition_instate / 1000) * 1000
+    cond <- as.integer(college_tuition$tuition_instate / 2000) * 2000 == as.integer(selected_one$tuition_instate / 2000) * 2000
+    ggplot(college_tuition, aes(x=tuition_instate)) + 
+      geom_histogram(data=subset(college_tuition, cond == FALSE), binwidth = 2000, boundary = 0, closed = "left", fill = "lightblue") +
+      geom_histogram(data=subset(college_tuition, cond == TRUE), binwidth = 2000, boundary = 0, closed = "left", fill = "blue")
+  })
+  
   
   # bar plot, admission
   output$distPlot <- renderPlot({
