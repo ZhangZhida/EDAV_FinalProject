@@ -21,25 +21,17 @@ library(dplyr)
 
 # Define UI for application that draws a histogram
 ui <- dashboardPage(
+  skin = "purple",
   dashboardHeader(title = "Final Project"),
   
   dashboardSidebar(
+    width = 200,
     sidebarMenu(
       menuItem("Dashboard", tabName = "dashboard", icon = icon("info")),
       
       menuItem("Data", tabName = "data", icon = icon("database"),
         menuSubItem("Raw Data", tabName = "raw_data", icon =  icon("angle-right")),
         menuSubItem("Data Description", tabName = "data_description", icon = icon("angle-right"))
-      ),
-      menuItem("Cost", tabName = "cost", icon = icon("th"),
-        menuSubItem("Admission", tabName = "admission", icon = icon("angle-right")),
-        menuSubItem("Affordability", tabName = "affordability", icon = icon("angle-right"))
-      ),
-      menuItem("Outcome", tabName = "outcome", icon = icon("check"),
-         menuSubItem("Education Quality", tabName = "quality", icon = icon("angle-right")),
-         menuSubItem("Diversity", tabName = "diversity", icon = icon("angle-right")),
-         menuSubItem("Earnings", tabName = "earnings", icon = icon("angle-right")),
-         menuSubItem("Completion", tabName = "completion", icon = icon("angle-right"))
       )
     )
   ),
@@ -49,36 +41,48 @@ ui <- dashboardPage(
       tabItem(
         tabName = "dashboard",
         fluidPage(
+          div(h4("Instruction: please select an area in the scatterplot, then select a university in the right-hand table."), style = "color:red"),
           fluidRow(
             column(6, 
-              h4("Scatterplot: Admission rate & SAT average"),
-              plotOutput("admission_scatterplot", height = 400, 
-                click = "admission_scatterplot_click",
-                brush = brushOpts(
-                  id = "admission_scatterplot_brush"
+              box(width = NULL, title = "Interactive select an area", status = "info", solidHeader = TRUE,
+                plotOutput("admission_scatterplot", height = 380,
+                   click = "admission_scatterplot_click",
+                   brush = brushOpts(
+                     id = "admission_scatterplot_brush"
+                   )
                 )
               )
             ),
             column(6, 
-              h4("Selected universities"),
               # verbatimTextOutput("admission_scatterplot_brush_info")
-              div(dataTableOutput('admission_scatterplot_brush_info'), style = "font-size:72%") 
+              box(width = NULL, title = "Selected university", status = "success", solidHeader = TRUE,
+                div(dataTableOutput('admission_scatterplot_brush_info'), style = "font-size:72%") 
+              )
             )
           ),
           fluidRow(
             column(3,
-              plotOutput('avg_10yr_salary', height = 270)
+               box(width = NULL, status = 'primary',
+                   plotOutput('avg_10yr_salary', height = 270)
+               )
             ),
             column(3,
-              plotOutput('faculty', height = 270)       
+              box(width = NULL, status = 'primary',
+                plotOutput('faculty', height = 270)   
+              )
             ),
             column(3,
-              plotOutput('diversity', height = 270)       
+              box(width = NULL, status = 'primary',
+                plotOutput('diversity', height = 270)    
+              )
             ),
             column(3,
-              plotOutput('completion', height = 270)       
+              box(width = NULL, status = 'primary',
+                plotOutput('completion', height = 270) 
+              )
             )
-          )
+          ),
+          withMathJax(textOutput("formula"))
         )
       ),
       tabItem(
@@ -100,52 +104,6 @@ ui <- dashboardPage(
             )
           )
         )
-      ),
-      tabItem(
-        tabName = "admission", 
-        fluidPage(
-          
-          # # Application title
-          # titlePanel("Old Faithful Geyser Data"),
-          
-          # Sidebar with a slider input for number of bins
-          # sidebarLayout(
-          #   sidebarPanel(
-          #     sliderInput("bins",
-          #                 "Number of bins:",
-          #                 min = 1,
-          #                 max = 50,
-          #                 value = 30)
-          #   ),
-          #   
-          #   # Show a plot of the generated distribution
-          #   mainPanel(
-          #     plotOutput("distPlot"),
-          #     plotOutput("scatterplot_admission")
-          #   )
-          # )
-          mainPanel(
-            h3("Histogram: Admission Rate and SAT Average"),
-            plotOutput("distPlot"),
-            h3("Scatter plot: Admission Rate and SAT Average"),
-            plotOutput("scatterplot_admission")
-          )
-        )
-      ),
-      tabItem(
-        tabName = "affordability", h2("affordability")
-      ),
-      tabItem(
-        tabName = "quality", h2("quality")
-      ),
-      tabItem(
-        tabName = "diversity", h2("diversity")
-      ),
-      tabItem(
-        tabName = "earnings", h2("earnings")
-      ),
-      tabItem(
-        tabName = "completion", h2("completion")
       )
     )
   )
@@ -190,11 +148,13 @@ server <- function(input, output) {
     selected_one_str <- selectedPoints[s, c('college_id')]
     
     BIN_INTEV <- 0.03
-    cond <- as.integer(race$RDI / BIN_INTEV) * BIN_INTEV == as.integer(race[which(race$college_id == as.character(selected_one_str)), ]$RDI / BIN_INTEV) * BIN_INTEV
+    select_RDI <- race[which(race$college_id == as.character(selected_one_str)), ]$RDI
+    cond <- as.integer(race$RDI / BIN_INTEV) * BIN_INTEV == as.integer(select_RDI / BIN_INTEV) * BIN_INTEV
 
     ggplot(race, aes(x=RDI)) + 
       geom_histogram(data = subset(race, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
-      geom_histogram(data = subset(race, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue")
+      geom_histogram(data = subset(race, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue") +
+      geom_vline(xintercept = select_RDI, linetype = "dotted")
   })
   
   # faculty
@@ -206,11 +166,13 @@ server <- function(input, output) {
     selected_one_str <- selectedPoints[s, c('college_id')]
     
     BIN_INTEV <- 0.03
-    cond <- as.integer(college_faculty$pct_faculty / BIN_INTEV) * BIN_INTEV == as.integer(college_faculty[which(college_faculty$college_id == as.character(selected_one_str)), ]$pct_faculty / BIN_INTEV) * BIN_INTEV
+    selected_pct_faculty <- college_faculty[which(college_faculty$college_id == as.character(selected_one_str)), ]$pct_faculty
+    cond <- as.integer(college_faculty$pct_faculty / BIN_INTEV) * BIN_INTEV == as.integer(selected_pct_faculty / BIN_INTEV) * BIN_INTEV
     
     ggplot(college_faculty, aes(x=pct_faculty)) + 
       geom_histogram(data=subset(college_faculty, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
-      geom_histogram(data=subset(college_faculty, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue")
+      geom_histogram(data=subset(college_faculty, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue") +
+      geom_vline(xintercept = selected_pct_faculty, linetype = "dotted")
   })
   
   # avg_10yr_salary
@@ -222,11 +184,13 @@ server <- function(input, output) {
     selected_one_str <- selectedPoints[s, c('college_id')]
     
     BIN_INTEV <- 5000
-    cond <- as.integer(college_avg_10yr_salary$avg_10yr_salary / BIN_INTEV) * BIN_INTEV == as.integer(college_avg_10yr_salary[which(college_avg_10yr_salary$college_id == as.character(selected_one_str)), ]$avg_10yr_salary / BIN_INTEV) * BIN_INTEV
+    selected_salary <- college_avg_10yr_salary[which(college_avg_10yr_salary$college_id == as.character(selected_one_str)), ]$avg_10yr_salary
+    cond <- as.integer(college_avg_10yr_salary$avg_10yr_salary / BIN_INTEV) * BIN_INTEV == as.integer(selected_salary / BIN_INTEV) * BIN_INTEV
     
     ggplot(college_avg_10yr_salary, aes(x=avg_10yr_salary)) + 
       geom_histogram(data=subset(college_avg_10yr_salary, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
-      geom_histogram(data=subset(college_avg_10yr_salary, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue")
+      geom_histogram(data=subset(college_avg_10yr_salary, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue") +
+      geom_vline(xintercept = selected_salary, linetype = "dotted")
   })
   
   
@@ -239,38 +203,17 @@ server <- function(input, output) {
     selected_one_str <- selectedPoints[s, c('college_id')]
     
     BIN_INTEV <- 0.03
-    cond <- as.integer(college_completion$completion_rate / BIN_INTEV) * BIN_INTEV == as.integer(college_completion[which(college_completion$college_id == as.character(selected_one_str)), ]$completion_rate / BIN_INTEV) * BIN_INTEV
+    selected_completion_rate <- college_completion[which(college_completion$college_id == as.character(selected_one_str)), ]$completion_rate
+    cond <- as.integer(college_completion$completion_rate / BIN_INTEV) * BIN_INTEV == as.integer( selected_completion_rate / BIN_INTEV) * BIN_INTEV
     
     ggplot(college_completion, aes(x=completion_rate)) + 
       geom_histogram(data=subset(college_completion, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
-      geom_histogram(data=subset(college_completion, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue")
-  })
-  
-  # bar plot, admission
-  output$distPlot <- renderPlot({
-    # # generate bins based on input$bins from ui.R
-    # x    <- faithful[, 2] 
-    # bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    # 
-    # # draw the histogram with the specified number of bins
-    # hist(x, breaks = bins, col = 'darkgray', border = 'white')
-    
-    # college <- readRDS('data/college.rds')
-    # college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
-    
-    plot_admi <- ggplot(college_no_na, aes(x = admission_rate)) +
-      geom_histogram()
-    
-    plot_sat <- ggplot(college_no_na, aes(x = sat_avg)) +
-      geom_histogram()
-    
-    grid.arrange(plot_admi, plot_sat, ncol = 2)
+      geom_histogram(data=subset(college_completion, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue") +
+      geom_vline(xintercept = selected_completion_rate, linetype = "dotted")
   })
   
   # scatter plot, admission
   output$admission_scatterplot <- renderPlot({
-    # college <- readRDS('data/college.rds')
-    # college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
     sat_avg <- college_no_na$sat_avg
     admission_rate <- college_no_na$admission_rate
     
@@ -281,7 +224,7 @@ server <- function(input, output) {
     
     baseplt <- ggplot(college_no_na, aes(x = sat_avg, y = admission_rate))
     baseplt + geom_point(alpha= 0.5) +
-      labs(title = "Scatter Plot", 
+      labs(title = "Scatterplot: Admission rate & SAT average", 
            x = "SAT Average", 
            y = "Admission Rate") +
       geom_point(data = selected_one, fill = 'red', shape = 24, size = 4) +
@@ -299,13 +242,7 @@ server <- function(input, output) {
     read.csv("data/dictionary.csv")
   })
   
-  # selected universities
-  # college_no_na <- reactive({
-  #   college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
-  #   college_no_na
-  # })
   output$admission_scatterplot_brush_info <- renderDT({
-    # college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
     college_no_na_show <- college_no_na[, c('name', 'sat_avg', 'admission_rate', 'tuition_instate', 'tuition_out')]
     selectedPoints <- brushedPoints(college_no_na_show, input$admission_scatterplot_brush)
     if(nrow(selectedPoints) == 0)
@@ -313,6 +250,10 @@ server <- function(input, output) {
     selectedPoints
   }, options = list(scrollX = TRUE, autoWidth=FALSE, pageLength = 10, processing = TRUE), selection = 'single')
   
+  # RDI explanation
+  output$formula <- renderPrint({
+    print(paste0("*Racial Diversity Index (RDI)*, which is defined by the probability that any two students selected at random would have different races. An RDI close to 1 implies high racial diversity while an RDI close to 0 implies low. This index was developed by Missouri State University (https://diversity.missouristate.edu/DiversityIndex.htm)."))
+  })
   
   
   
