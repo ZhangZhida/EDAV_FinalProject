@@ -17,6 +17,7 @@ library(DT)
 library(xlsx)
 library(gridExtra)
 library(ggplot2)
+library(dplyr)
 
 # Define UI for application that draws a histogram
 ui <- dashboardPage(
@@ -76,7 +77,10 @@ ui <- dashboardPage(
           ),
           fluidRow(
             column(3,
-              plotOutput('tuition')
+              plotOutput('tuition', height = 270)
+            ),
+            column(3,
+              plotOutput('diversity', height = 270)       
             )
           )
         )
@@ -176,6 +180,41 @@ server <- function(input, output) {
       geom_histogram(data=subset(college_tuition, cond == TRUE), binwidth = 2000, boundary = 0, closed = "left", fill = "blue")
   })
   
+  # diversity
+  output$diversity <- renderPlot({
+    race_cat = c("college_id","race_white", "race_black", "race_hispanic", 
+                 "race_asian", "race_native", "race_pacific", 
+                 "race_2more", "race_nonresident", "race_unknown")
+    race = college %>% select ("name", race_cat)
+    colnames(race) = c("name","college_id", "White", "Black", "Hispanic", "Asian",
+                       "Native", "Pacific", "Two_more", "Non_resident", "Unknown")
+    race <- race %>% mutate(RDI = 1- {(race$White)^2 + (race$Black)^2 + 
+        (race$Hispanic)^2 + (race$Asian)^2 + (race$Native)^2 + (race$Pacific)^2 + 
+        (race$Two_more)^2 + (race$Non_resident)^2 + (race$Unknown)^2})
+    
+    
+    
+    # college_tuition <- college[c("tuition_instate", "tuition_out")]
+    # # college_tuition$tuition_instate <- (as.integer(college_tuition$tuition_instate / 1000) + 0.1)
+    # college_tuition$tuition_out <- college_tuition$tuition_out / 1000
+    
+    
+    
+    selectedPoints <- brushedPoints(college_no_na, input$admission_scatterplot_brush)
+    s <- input$admission_scatterplot_brush_info_rows_selected
+    selected_one_str <- selectedPoints[s, c('college_id')]
+    # selected_one <- college_no_na[which(college_no_na['college_id'] == as.character(selected_one_str)),]
+    
+    cond <- as.integer(race$RDI / 0.03) * 0.03 == as.integer(race[which(race$college_id == as.character(selected_one_str)), ]$RDI / 0.03) * 0.03
+    
+    # cond <- college_tuition$tuition_instate == as.integer(selected_one$tuition_instate / 1000) * 1000
+    # cond <- as.integer(college_tuition$tuition_instate / 2000) * 2000 == as.integer(selected_one$tuition_instate / 2000) * 2000
+    ggplot(race, aes(x=RDI)) + 
+      geom_histogram(data = subset(race, cond == FALSE), binwidth = 0.03, boundary = 0, closed = "left", fill = "lightblue") +
+      geom_histogram(data = subset(race, cond == TRUE), binwidth = 0.03, boundary = 0, closed = "left", fill = "blue")
+      # geom_histogram(data=subset(college_tuition, cond == FALSE), binwidth = 2000, boundary = 0, closed = "left", fill = "lightblue") 
+  })
+  
   
   # bar plot, admission
   output$distPlot <- renderPlot({
@@ -216,7 +255,7 @@ server <- function(input, output) {
            x = "SAT Average", 
            y = "Admission Rate") +
       geom_point(data = selected_one, fill = 'red', shape = 24, size = 4) +
-      geom_text(data = selected_one, aes(label = name), vjust = -0.5)
+      geom_text(data = selected_one, aes(label = name), vjust = -0.5, color = "blue")
     
   })
   
