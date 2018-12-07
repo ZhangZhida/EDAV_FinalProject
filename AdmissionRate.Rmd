@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Admission Rate and SAT Average
 
-To get a sense of how admission and SAT scores are distributed respectively, we plot the histogram on this two variables. From the histogram of admission rate, we could see that most schools have the admission rate range between 0.5 to 0.8. Only a small proportion of schools have admission rate below 0.25. From the SAT average histogram, we see that majority of students enrolled into universities have scores in the range of 900 to 1200. The high the score is, the less quantity of students there are. 
+To get a sense of how admission and SAT scores are distributed respectively, we plot the histogram on this two variables. From the histogram of admission rate, we could see that most schools have the admission rate range between 0.5 to 0.8. Only a small proportion of schools have admission rate below 0.25. From the SAT average histogram, we see that the majority of students enrolled into universities have scores in the range of 900 to 1200. The high the score is, the less quantity of students there are. 
 
 However, how do we know the relationship between admission rate and SAT average? Do we have the intuitive pattern like higher score and lower admission rate?
 
@@ -38,7 +38,7 @@ grid.arrange(plot_admi, plot_sat, ncol = 2)
 
 ## Scatter plot
 
-We try scatter plot to explore the relationship between admission rate and SAT average. As we ccan see on the scatter plot below, there are mainly two main patterns. For those schools with SAT average below 1200, the admission rate seems not tight related with SAT average scores. That is, the SAT average is not the main factor when university enrolling students. On the other hand, for those university with SAT average higher than 1200, we could clear see a trend, The higher SAT average corresponds to low admission rate. However, we could only see the relationship, and we cannot infer the internal reason for that. Based on our daily experience, the reason for this pattern is that when a school has very high SAT score requirement, it will lead to lower admission rate. This explanation based on our experience could well count for this pattern. \newline \newline \newline
+We try scatter plot to explore the relationship between admission rate and SAT average. As we scan see on the scatter plot below, there are mainly two main patterns. For those schools with SAT average below 1200, the admission rate seems not tightly related with SAT average scores. That is, the SAT average is not the main factor when university enrolling students. On the other hand, for those universities with SAT average higher than 1200, we could clearly see a trend, The higher SAT average corresponds to low admission rate. However, we could only see the relationship, and we cannot infer the internal reason for that. Based on our daily experience, the reason for this pattern is that when a school has very high SAT score requirement, it will lead to lower admission rate. This explanation based on our experience could well count for this pattern. \newline \newline \newline
 
 
 ```{r}
