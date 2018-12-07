@@ -18,6 +18,7 @@ library(xlsx)
 library(gridExtra)
 library(ggplot2)
 library(dplyr)
+library(extracat)
 
 # Define UI for application that draws a histogram
 ui <- dashboardPage(
@@ -30,7 +31,8 @@ ui <- dashboardPage(
       
       menuItem("Data", tabName = "data", icon = icon("database"),
         menuSubItem("Raw Data", tabName = "raw_data", icon =  icon("angle-right")),
-        menuSubItem("Data Description", tabName = "data_description", icon = icon("angle-right"))
+        menuSubItem("Data Description", tabName = "data_description", icon = icon("angle-right")),
+        menuSubItem("Missing Pattern", tabName = "missing_pattern", icon = icon("angle-right"))
       )
     )
   ),
@@ -87,6 +89,7 @@ ui <- dashboardPage(
       tabItem(
         tabName = "raw_data",
         fluidPage(
+          titlePanel("Raw Data"),
           fluidRow(
             column(12,
                    dataTableOutput('table_raw')
@@ -97,9 +100,20 @@ ui <- dashboardPage(
       tabItem(
         tabName = "data_description",
         fluidPage(
+          titlePanel("Data Description"),
           fluidRow(
             column(12,
                    tableOutput('table_description')
+            )
+          )
+        )
+      ),tabItem(
+        tabName = "missing_pattern",
+        fluidPage(
+          titlePanel("Data Missing Pattern"),
+          fluidRow(
+            column(12,
+                   plotOutput('missing_pattern', height = 1200)
             )
           )
         )
@@ -129,6 +143,11 @@ server <- function(input, output) {
   #     geom_histogram(data=subset(college_tuition, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
   #     geom_histogram(data=subset(college_tuition, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue")
   # })
+  
+  # missing pattern
+  output$missing_pattern <- renderPlot({
+    visna(college, sort = "b")
+  })
   
   # diversity
   output$diversity <- renderPlot({
@@ -226,11 +245,12 @@ server <- function(input, output) {
     selected_one <- college_no_na[which(college_no_na['college_id'] == as.character(selected_one_str)),]
     
     baseplt <- ggplot(college_no_na, aes(x = sat_avg, y = admission_rate))
-    baseplt + geom_point(alpha= 0.5) +
+    baseplt + geom_point(alpha= 0.8, color = "navy", stroke = 0) +
       labs(title = "Scatterplot: Admission rate & SAT average", 
            x = "SAT Average", 
            y = "Admission Rate") +
-      geom_point(data = selected_one, fill = 'red', shape = 24, size = 4) +
+      geom_point(data = selected_one, color = 'red', shape = 24, size = 4) +
+      theme_classic(13)+
       geom_text(data = selected_one, aes(label = name), vjust = -0.5, color = "blue")
     
   })
