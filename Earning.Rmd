@@ -27,7 +27,7 @@ ggplot(college, aes(x=avg_10yr_salary))+
   labs(x="Average 10 Year Salary (in Thousands)")+
   ggtitle("Histogram of Average 10 Year Salary")
 ```
-The average 10 year salary variable represents the mean earnings of students working and not enrolled at school 10 years after entry. The overall distribution of the average 10 year salary is skewed to the right. Most of our observations have an average 10 year salary of around 20,000 to 40,000 dollars. There are also a couple observations with higher average 10 year salary than 100,000 dollars.
+The average 10 year salary variable represents the mean earnings of students working and not enrolled at school 10 years after entry. The overall distribution of the average 10 year salary is skewed to the right. Most of our observations have an average 10 year salary of around 20,000 to 40,000 dollars. There are also a couple of observations with higher average 10 year salary than 100,000 dollars.
 
 
 ```{r}
@@ -41,7 +41,7 @@ ggplot(college, aes(x=avg_10yr_salary))+
   ggtitle("Histogram of Average 10 Year Salary by Ownership")
 ```
 
-By faceting average 10 year salary into different ownership group, we can see the different distribution for public, private nonprofit, and private for-profit schools. The total numbers of observations for the three ownership type are `r a`, `r b`, `r c`. Among the three types, although private nonprofit schools have the least observations, they have the distribution most skewed right, with highest mean and mode. This indicates students from private nonprofit schools have highest average 10 year salary among the three school types. While Public schools have the mode for average 10 year salary at around 30,000 dollars, private for-profit schools have the mode at around 20,000 dollars, and overall, students from public schools rank the second in average 10 year salary. Therefore, the average 10 year salary differs for students from different ownership type schools.
+By faceting average 10 year salary into different ownership group, we can see the different distribution for public, private nonprofit, and private for-profit schools. The total numbers of observations for the three ownership type are `r a`, `r b`, `r c`. Among the three types, although private nonprofit schools have the least observations, they have the distribution most skewed right, with the highest mean and mode. This indicates students from private nonprofit schools have the highest average 10 year salary among the three school types. While Public schools have the mode for average 10 year salary at around 30,000 dollars, private for-profit schools have the mode at around 20,000 dollars, and overall, students from public schools rank the second in average 10 year salary. Therefore, the average 10 year salary differs for students from different ownership type schools.
 
 ```{r}
 ggplot(college, aes(x=reorder(ownership,avg_10yr_salary),y=avg_10yr_salary))+
