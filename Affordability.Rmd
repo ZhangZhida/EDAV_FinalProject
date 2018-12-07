@@ -4,7 +4,9 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 ```
 
 ```{r}
@@ -25,11 +27,11 @@ college1$ownership<-fct_relevel(college1$ownership,'Public','Private Nonprofit',
 college2$ownership <- recode[college2$ownership]
 college2$ownership<-fct_relevel(college2$ownership,'Public','Private Nonprofit','Private for-Profit')
 p3<-ggplot(college1, aes(x=tuition_instate))+
-  geom_histogram(bins = 30)+
+  geom_histogram(bins = 30,fill = "lightblue", color = "black")+
   labs(x="Instate Tuition (in Thousands)")+
   ggtitle("Histogram of Instate Tuition")
 p4<-ggplot(college2, aes(x=tuition_out))+
-  geom_histogram(bins = 30)+
+  geom_histogram(bins = 30,fill = "lightblue", color = "black")+
   labs(x="Out-of-State Tuition (in Thousands)")+
   ggtitle("Histogram of Out-of-State Tuition")
 grid.arrange(p3,p4,ncol=1)
@@ -42,12 +44,12 @@ Instate and out-of-state tuition are the tuition and fees for instate, and out-o
 
 ```{r}
 p5 <- ggplot(college1, aes(x=tuition_instate))+
-  geom_histogram(bins = 30)+
+  geom_histogram(bins = 30,fill = "lightblue", color = "black")+
   facet_grid(.~ownership)+
   labs(x="Instate Tuition (in Thousands)")+
   ggtitle("Histogram of Instate Tuition by Ownership")
 p6 <- ggplot(college2, aes(x=tuition_out))+
-  geom_histogram(bins = 30)+
+  geom_histogram(bins = 30,fill = "lightblue", color = "black")+
   facet_grid(.~ownership)+
   labs(x="Out-of-State Tuition (in Thousands)")+
   ggtitle("Histogram of Out-of-State Tuition by Ownership")
@@ -81,7 +83,7 @@ college3 =  college[!is.na(college$pct_loan), ]
 college3$ownership <- recode[college3$ownership]
 college3$ownership<-fct_relevel(college3$ownership,'Public','Private Nonprofit','Private for-Profit')
 ggplot(college3, aes(x=pct_loan))+
-  geom_histogram()+
+  geom_histogram(fill = "lightblue", color = "black")+
   labs(x="Percent Loan")+
   ggtitle("Histogram for Percent Loan")+
   facet_grid(.~ownership)

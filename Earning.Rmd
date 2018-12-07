@@ -4,7 +4,9 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 ```
 
 ```{r}
@@ -21,7 +23,7 @@ recode <- c('1'='Public','2'='Private Nonprofit','3'='Private for-Profit')
 college$ownership <- recode[college$ownership]
 college$ownership<-fct_relevel(college$ownership,'Public','Private Nonprofit','Private for-Profit')
 ggplot(college, aes(x=avg_10yr_salary))+
-  geom_histogram(bins = 30)+
+  geom_histogram(bins = 30,fill = "lightblue", color = "black")+
   labs(x="Average 10 Year Salary (in Thousands)")+
   ggtitle("Histogram of Average 10 Year Salary")
 ```
@@ -33,7 +35,7 @@ a=count(college[ which(college$ownership=='Public'),])
 b=count(college[ which(college$ownership=='Private Nonprofit'),])
 c=count(college[ which(college$ownership=='Private for-Profit'),])
 ggplot(college, aes(x=avg_10yr_salary))+
-  geom_histogram(bins = 30)+
+  geom_histogram(bins = 30,fill = "lightblue", color = "black")+
   facet_grid(.~ownership)+
   labs(x="Average 10 Year Salary (in Thousands)")+
   ggtitle("Histogram of Average 10 Year Salary by Ownership")
@@ -50,24 +52,27 @@ ggplot(college, aes(x=reorder(ownership,avg_10yr_salary),y=avg_10yr_salary))+
 The boxplot for average 10 year salary gives us a better understanding of the median, as well as outliers of the data. We can see that the median for private nonprofit schools is highest, while that of private for-profit ones is lowest. Moreover, we can clearly see the outliers. Comparing to other ownership types, private for-profit schools have the least number of outliers, and the value of outlier is lowest (no outliers with value over 100,000). The boxplot also indicates students from private nonprofit schools  have higher average 10 year salary than those from public and private for-profit schools.
 
 
-```{r fig.height=5}
+```{r}
 college =  college[!is.na(college$tuition_out), ]
 library(gridExtra)
 p1 <- ggplot(college, aes(x=tuition_instate,y=avg_10yr_salary))+
   geom_point(alpha = .3, color = "navy", stroke = 0)+
   labs(x="Instate Tuition (in Thousands)",y="Average 10 Year Salary (in Thousands)")+
-  ggtitle("Scatter Plot for Instate Tuition VS Average 10 Year Salary")+ 
+  ggtitle("Average 10 Year Salary Increases with Higher Instate Tuition")+ 
   geom_smooth(method='lm',formula=y~x,color="red")+
+  theme(plot.title = element_text(size = rel(0.5)))+
   theme_classic(14)
 p2 <- ggplot(college, aes(x=tuition_out,y=avg_10yr_salary))+
   geom_point(alpha = .3, color = "navy", stroke = 0)+
   labs(x="Out-of-State Tuition (in Thousands)",y="Average 10 Year Salary (in Thousands)")+
-  ggtitle("Scatter Plot for Out-of-State Tuition VS Average 10 Year Salary")+ 
+  ggtitle("Average 10 Year Salary Increases with Higher Out-of-State Tuition")+ 
   geom_smooth(method='lm',formula=y~x,color="red")+
+  theme(plot.title = element_text(size = rel(0.5)))+
   theme_classic(14)
 r2_1 = format(summary(lm(college$avg_10yr_salary~college$tuition_instate))$r.squared*100, digits = 3)
 r2_2 = format(summary(lm(college$avg_10yr_salary~college$tuition_out))$r.squared*100, digits = 3)
-grid.arrange(p1,p2,ncol=1)
+p1
+p2
 ```
 We can see from the scatter plot that there is some positive correlation between both instate, out-of-state tuition and average 10 year salary. The more expensive the tuition is, the higer the average 10 year salary is. `r r2_1`, `r r2_2` percent of the variation in average 10 year salary is explained by the variation in predictor instate tuition, and out-of-state tuition, respectively.
 
