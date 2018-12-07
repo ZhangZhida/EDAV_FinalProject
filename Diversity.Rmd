@@ -14,9 +14,9 @@ library(kableExtra)
 
 #1. Racial Diversity
 
-Racial segregation, with its root in the practice of slavery and segregation, is still present today in the United States. Rcacial separation impedes the establishment of a multicultural and equal society. In particular, it poses challenges for minority students to improve in educational settings, as discrimination, racial biases and prejudices pervade. On the contrary, racial diversity can benefit students for it fosters collabration, encourages creativity, and ultimately improves academic achievement. Therefore, we would like to provide an evaluation of racial diversity among colleges.
+Racial segregation, with its root in the practice of slavery and segregation, is still present today in the United States. Racial separation impedes the establishment of a multicultural and equal society. In particular, it poses challenges for minority students to improve in educational settings, as discrimination, racial biases, and prejudices pervade. On the contrary, racial diversity can benefit students for it fosters collaboration, encourages creativity, and ultimately improves academic achievement. Therefore, we would like to provide an evaluation of racial diversity among colleges.
 
-To begin analysis, we first explore **how common each race is in colleges**.
+To begin the analysis, we first explore **how common each race is in colleges**.
 
 ```{r}
 library(readr)
@@ -95,7 +95,7 @@ kable(head(race %>% filter(RDI != 1) %>% arrange(-RDI) %>% select(name, RDI)),
       caption = "Colleges with Highest Racial Diversity")
 ```
 
-Finally, taking a look at the make-ups of the three most racially diverse colleges, we can see that proportions of races can still vary a lot within each college. For instance, at *Chaminade University of Honolulu*, almost one-third of students are `Asian` but only few are `Native` and `Non-resident`.
+Finally, taking a look at the make-ups of the three most racially diverse colleges, we can see that the proportions of races can still vary a lot within each college. For instance, at *Chaminade University of Honolulu*, almost one-third of students are `Asian` but only few are `Native` and `Non-resident`.
 
 ```{r fig.width = 8}
 top3 = c("Chaminade University of Honolulu","Everest College-Renton",
@@ -120,7 +120,7 @@ g4
 
 #2. Gender Diversity
 
-Gender equality has been an issue in workplace, where women are known to have struggled for parity in pay and influence. To form awareness of gender equality and reduce challenges in workplace in the future, more and more colleges have been working on promoting gender diversity.
+Gender equality has been an issue in the workplace, where women are known to have struggled for parity in pay and influence. To form awareness of gender equality and reduce challenges in workplace in the future, more and more colleges have been working on promoting gender diversity.
 
 To investigate gender diversity, we first explore **how common each gender is in colleges**. Comparing the medians in the boxplot we see that most colleges seem to have more female students than male.
 
