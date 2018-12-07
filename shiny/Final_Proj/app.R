@@ -25,7 +25,6 @@ ui <- dashboardPage(
   dashboardHeader(title = "Final Project"),
   
   dashboardSidebar(
-    width = 200,
     sidebarMenu(
       menuItem("Dashboard", tabName = "dashboard", icon = icon("info")),
       
@@ -153,6 +152,7 @@ server <- function(input, output) {
 
     ggplot(race, aes(x=RDI)) + 
       geom_histogram(data = subset(race, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
+      labs(x = "RDI(diversity)", y = "amount")+
       geom_histogram(data = subset(race, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue") +
       geom_vline(xintercept = select_RDI, linetype = "dotted")
   })
@@ -171,6 +171,7 @@ server <- function(input, output) {
     
     ggplot(college_faculty, aes(x=pct_faculty)) + 
       geom_histogram(data=subset(college_faculty, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
+      labs(x = "percentage of faculty", y = "amount") + 
       geom_histogram(data=subset(college_faculty, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue") +
       geom_vline(xintercept = selected_pct_faculty, linetype = "dotted")
   })
@@ -189,6 +190,7 @@ server <- function(input, output) {
     
     ggplot(college_avg_10yr_salary, aes(x=avg_10yr_salary)) + 
       geom_histogram(data=subset(college_avg_10yr_salary, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
+      labs(x = "10 year salary(average)", y = "amount") +
       geom_histogram(data=subset(college_avg_10yr_salary, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue") +
       geom_vline(xintercept = selected_salary, linetype = "dotted")
   })
@@ -208,6 +210,7 @@ server <- function(input, output) {
     
     ggplot(college_completion, aes(x=completion_rate)) + 
       geom_histogram(data=subset(college_completion, cond == FALSE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "lightblue") +
+      labs(x = "completion rate", y = "amount") +
       geom_histogram(data=subset(college_completion, cond == TRUE), binwidth = BIN_INTEV, boundary = 0, closed = "left", fill = "blue") +
       geom_vline(xintercept = selected_completion_rate, linetype = "dotted")
   })

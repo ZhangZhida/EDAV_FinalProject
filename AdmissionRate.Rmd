@@ -3,6 +3,7 @@ title: "Hmk4-Q3"
 author: "Zhida Zhang (zz2578)"
 date: "November 14, 2018"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 ---
@@ -25,10 +26,10 @@ college <- readRDS('college.rds')
 college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
 
 plot_admi <- ggplot(college_no_na, aes(x = admission_rate)) +
-  geom_histogram()
+  geom_histogram(fill = "lightblue", color = "black")
 
 plot_sat <- ggplot(college_no_na, aes(x = sat_avg)) +
-  geom_histogram()
+  geom_histogram(fill = "lightblue", color = "black")
 
 grid.arrange(plot_admi, plot_sat, ncol = 2)
 
@@ -44,10 +45,10 @@ We try scatter plot to explore the relationship between admission rate and SAT a
 
 college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
 sat_avg <- college_no_na$sat_avg
-admission_rate <- college_no_na$admission_rate
-
+admission_rate <- college_no_na$admission_rate 
 baseplt <- ggplot(college_no_na, aes(x = sat_avg, y = admission_rate))
-baseplt + geom_point(alpha= 0.5) +
+baseplt + geom_point(alpha= 0.5, color = "navy", stroke = 0) +
+  theme_classic(14) + 
   labs(title = "Scatter Plot", 
        x = "SAT Average", 
        y = "Admission Rate")
@@ -78,14 +79,16 @@ sat_avg <- college_no_na$sat_avg
 admission_rate <- college_no_na$admission_rate
 
 plot_low <- ggplot(college_no_na_low, aes(x = sat_avg, y = admission_rate))+ 
-  geom_point(alpha= 0.5) +
+  geom_point(alpha= 0.5, color = "navy", stroke = 0) +
+  theme_classic(14) + theme(plot.title = element_text(size = rel(0.8))) +
   geom_density_2d(color = "red", bins = 5) + 
   labs(title = "Low Admission Rate Plot", 
        x = "SAT Average", 
        y = "Admission Rate [0, 0.25)")
 
 plot_high <- ggplot(college_no_na_high, aes(x = sat_avg, y = admission_rate))+ 
-  geom_point(alpha= 0.5) +
+  geom_point(alpha= 0.5, color = "navy", stroke = 0) +
+  theme_classic(14) + theme(plot.title = element_text(size = rel(0.8))) +
   geom_density_2d(color = "red", bins = 8) + 
   labs(title = "Regular Admission Rate Plot", 
        x = "SAT Average", 
@@ -95,6 +98,3 @@ grid.arrange(plot_low, plot_high, ncol = 2)
 
 
 ```
-
-## [-Final project Group-]
- Group: qf2140_zz2578_zz2592
