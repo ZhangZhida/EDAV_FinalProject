@@ -65,7 +65,7 @@ baseplt + geom_point(alpha= 0.5, color = "navy", stroke = 0) +
 
 To follow on exploring the two patterns we found on the last graph, we plot the density contour lines based on the scatter plots. 
 
-From the left handside graph, we see there is a sharp decline pattern, that is, as SAR average become slighly higher, the admission rate immediately drops a lot. The reason for this may be that score higher than 1400 are very rare and there is not much space for a obvious higher score, but there is still space for lower admission rate. 
+From the left handside graph, we see there is a sharp decline pattern, that is, as SAR average become slightly higher, the admission rate immediately drops a lot. The reason for this may be that score higher than 1400 are very rare and there is not much space for an obvious higher score, but there is still space for lower admission rate. 
 
 Meanwhile, we see some university with relatively lower SAT average, but they still have very low admission rate. It is possibly based on the fact that SAT score is only one single requirement for universities to enroll good students. These universities on the left part of the plot may have more expectation on students with internship experience, sports talents, etc. Or, we can guess that students with very high SAT scores are not willing to go to these universities due to some reasons and thereby the SAT average becomes relatively lower. Those two reasons discussed above could explain that they have low admission rate even though they don't have very high requirement on SAT scores.  \newline \newline
 
