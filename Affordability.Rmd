@@ -38,7 +38,7 @@ grid.arrange(p3,p4,ncol=1)
 ```
 
 
-Instate and out-of-state tuition are the tuition and fees for instate, and out-of-state students, respectively. From the histogram above, we can see that the distribution of the two tuition are similar, and they both skewed right. Out-of-state students have overall higher tuition fee than instate students.
+Instate and out-of-state tuition are the tuition and fees for instate, and out-of-state students, respectively. From the histogram above, we can see that the distribution of the two tuitions are similar, and they both skewed right. Out-of-state students have an overall higher tuition fee than instate students.
 
 
 
@@ -57,7 +57,7 @@ grid.arrange(p5,p6,ncol=1)
 ```
 
 
-By faceting instate and out-of-state tuition into different ownership groups, we can see the different distributions for public, private nonprofit, and private for-profit schools, but the pattern for instate and out-of-state tuition is similar. For public schools, both instate and out-of-state tuition are lowest among all three ownership type, and the distribution is unimodal and skewed right. For private nonprofit schools, the tuition have larger range, and its distribution is bimodal. Therefore, the tuition differs for students from different ownership type schools.
+By faceting instate and out-of-state tuition into different ownership groups, we can see the different distributions for the public, private nonprofit, and private for-profit schools, but the pattern for instate and out-of-state tuition is similar. For public schools, both instate and out-of-state tuition are lowest among all three ownership type, and the distribution is unimodal and skewed right. For private nonprofit schools, the tuition has a larger range, and its distribution is bimodal. Therefore, the tuition differs for students from different ownership type schools.
 
 
 
@@ -74,7 +74,7 @@ grid.arrange(p7,p8,ncol=2)
 ```
 
 
-The boxplot for tuition by ownership gives us a better understanding of the median, as well as outliers of the data. We can see that the median for private nonprofit schools is highest, while that of public is lowest. Moreover, we can clearly see the outliers. The one outlier for private for-private schools with value over 70,000 dollar seems like an unusal observation.
+The boxplot for tuition by ownership gives us a better understanding of the median, as well as outliers of the data. We can see that the median for private nonprofit schools is the highest, while that of public is the lowest. Moreover, we can clearly see the outliers. The one outlier for private for-private schools with a value over 70,000 dollar seems like an unusual observation.
 
 
 
