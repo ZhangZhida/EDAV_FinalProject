@@ -38,6 +38,7 @@ grid.arrange(gc1, gc2)
 ```
 
 The colleges with the highest completion rates are listed below in *Table 1*.
+
 ```{r}
 kable(head(na.omit(college) %>% arrange(-completion_rate) %>% select(name, completion_rate)),
       caption = "Colleges with Highest Completion Rate")
@@ -113,51 +114,5 @@ gc4 = mosaic(predominant_degree~ownership, count1, direction = c("v", "h"),
                                         offset_varnames = c(0,0,0,2),
                                         offset_labels = c(0,0,0,2.5)),  
              main = "Predominant Degree vs. Ownership")
-gc4
-```
-
-## Highest Degree
-
-Like `predominant degree`, *Certificate degree* is the most frequently awarded highest degree, but now *non-degree-granting* is the least. Such a result shows evidence for the extensive size of professional schools that offer mainly *Certificate degree* as their highest degree. For other schools, we shall expect *Graduate degree* as the most commonly awarded highest degree.
-
-```{r}
-gc5 = ggplot(degree, aes(x = fct_reorder(highest_degree, highest_degree, function(x){length(x)}, .desc = TRUE))) + 
-  geom_bar(fill = "lightblue", color = "black") +
-  labs(x = "highest degree") + 
-  theme(axis.ticks.x = element_blank(), 
-        panel.grid.major.x = element_blank(),
-        text = element_text(size = 10)) + 
-  scale_y_continuous(breaks = seq(0, 3000, 500))
-gc5
-```
-
-### Highest Degree by Ownership
-Like `predominant degree`, highest degree is also associated with `ownership`. Specifically, we find that the highest degree is mostly
-
-+ *Certificate degree* for private *for-profit* schools; 
-+ *Associate degree* for *public* schools;
-+ *Graduate degree* for private *non-profit* schools.
-
-```{r fig.height=5}
-# Sort highest_degree by frequency
-count2 = degree %>% group_by(ownership, highest_degree) %>% summarize(Freq = n()) 
-high_deg_order = count2 %>% group_by(highest_degree) %>% 
-  summarize(sum = sum(Freq)) %>% arrange(-sum) %>% 
-  pull(highest_degree)
-count2$highest_degree = factor(count2$highest_degree, levels = high_deg_order)
-
-# Sort ownership by frequency
-ownership_order2 = count2 %>% group_by(ownership) %>% 
-  summarize(sum = sum(Freq)) %>% arrange(-sum) %>% 
-  pull(ownership)
-count2$ownership = factor(count2$ownership, levels = ownership_order2)
-
-gc4 = mosaic(highest_degree~ownership, count2, direction = c("v", "h"),
-             gp = gpar(fill = fillcolors),
-             labeling = labeling_border(gp_labels = gpar(fontsize = 6),
-                                        rot_labels = c(0, 0, 0, 0), 
-                                        offset_varnames = c(0,0,0,2),
-                                        offset_labels = c(0,0,0,2.8)),  
-             main = "Highest Degree vs. Ownership")
 gc4
 ```

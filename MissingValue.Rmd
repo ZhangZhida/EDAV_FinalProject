@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE)
 ```
 
-```{r fig.width=10}
+```{r}
 setwd(("/Users/Mavis1/Documents/ColumbiaUniv/Fall2018/EDAV/"))
 library(tidyverse)
 library(gridExtra)
@@ -26,7 +26,7 @@ ggplot(a, aes(x=reorder(factor(a$variables),-a$missing), y=a$missing))+
   geom_bar(stat="identity",fill = "lightblue", color = "black")+
   ggtitle("Percent Missing by Variable")+
   labs(x = "Variables", y = "Percent Missing") +   
-  theme(axis.text.x = element_text(size = rel(0.5)),
+  theme(axis.text.x = element_text(size = rel(1),angle = 90, hjust = 1),
         axis.text.y = element_text(size = rel(1)),
         strip.text = element_text(size = rel(1)))
 ```

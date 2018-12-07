@@ -41,11 +41,6 @@ ge2 = ggplot(faculty, aes(x = "", y = pct_faculty)) +
 grid.arrange(ge1, ge2)
 ```
 
-Colleges with the highest % of full-time faculty are listed below.
-```{r}
-kable(head(na.omit(faculty) %>% arrange(-pct_faculty) %>% select(name, pct_faculty)))
-```
-
 ## Associations with Full-time Faculty
 For further analysis of `full-time faculty`, we propose two research questions:
 
