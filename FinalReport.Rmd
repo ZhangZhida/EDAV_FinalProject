@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE,
 
 With the fierce competition in the labor pool nowadays, more and more high schoolers choose to pursue a college education after graduation. College education not only equips students with knowledge and skills that are essential for their development, but also expands their networks which could advance them in future career. Yet, the search for an appropriate college can be overwhelming, given the vast range of factors one has to consider and the limitation of knowledge one has for colleges at hand. 
 
-Therefore, in our project, we would like to provide a way for students and their families to compare across different colleges based on the **cost-value** tradeoffs catering to their own needs, academic and career goals. We split cost-value tradeoffs into multiple parts, and define **cost** as integration of *admission requirement* and *affordability* of the college, and *value* as the combination of *education quality*, *diversity*, *completion* and *earnings after graduation*. Through our project, we will conduct exploratory data analysis on each part mentioned.
+Therefore, in our project, we would like to provide a way for students and their families to compare across different colleges based on the **cost-value** tradeoffs catering to their own needs, academic and career goals. We split cost-value tradeoffs into multiple parts, and define **cost** as integration of *admission requirement* and *affordability* of the college, and **value** as the combination of *education quality*, *diversity*, *completion* and *earnings after graduation*. Through our project, we will conduct exploratory data analysis on each part mentioned.
 
 To guide the project, we propose the main research question: **how the values are related to the costs?** Specifically, do schools with higher admission requirement and higher tuition fees provide higher education quality, diversity, completion and earnings?
 
@@ -29,7 +29,7 @@ The dataset employed in this project was obtained from *The College Scorecard* (
 \newpage
 #ANALYSIS OF DATA QUALITY
 
-Since *The College Scorecard* project is supervised under the U.S. Department of Education, we are safe to presume the source of our data is valid. For our interest, we selected 35 features, of which 25 are continuous and 10 are categorical. A detailed data dictionary could be found at the GitHub repository.
+Since *The College Scorecard* project is supervised under the U.S. Department of Education, we are safe to presume the source of our data is valid. For our interest, we selected 35 features, of which 25 are continuous and 10 are categorical. A detailed data dictionary could be found at the GitHub repository. (https://github.com/ZhangZhida/EDAV_FinalProject; file:Data Dictionary.pdf) Data cleaning code can also be found there with file name Data cleaning.R.
 
 For missing value and patterns, we have the following analysis. According to the histogram below, for most schools, average SAT scores are missing. Number of graduate students, admission rate, and completion rate have missing value over 50%. Percent of full time faculty, in state tuition, out-of-state tuition, and average faculty salary have missing value a little under 50%. Other variables have lower than 12% missing value.
 
@@ -67,12 +67,10 @@ visna(college,sort="b")
 ##COST
 ###Admission Requirement
 
-To get a sense of how admission and SAT scores are distributed respectively, we plot the histogram on this two variables. From the histogram of admission rate, we could see that most schools have the admission rate range between 0.5 to 0.8. Only a small proportion of schools have admission rate below 0.25. From the SAT average histogram, we see that the majority of students enrolled into universities have scores in the range of 900 to 1200. The high the score is, the less quantity of students there are. 
+To get a sense of how admission and SAT scores are distributed respectively, we plot the histogram on this two variables. From the histogram of admission rate, we could see that most schools have the admission rate range between 0.5 to 0.85. Only a small proportion of schools have admission rate below 0.25. From the SAT average histogram, we see that the majority of students enrolled into universities have scores in the range of 900 to 1200. The higher the score is, the less number of students there are. 
 
 ```{r message=FALSE, warning=FALSE, fig.height=3}
 library(ggplot2)
-library(gridExtra)
-
 college <- readRDS('college.rds')
 college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
 
@@ -86,9 +84,9 @@ grid.arrange(plot_admi, plot_sat, ncol = 2)
 
 ```
 
-However, how do we know the relationship between admission rate and SAT average? Do we have the intuitive pattern like higher score and lower admission rate?
+However, how do we know the relationship between admission rate and SAT average? Do we have any intuitive pattern like higher score and lower admission rate?
 
-We try scatter plot to explore the relationship between admission rate and SAT average. As we scan see on the scatter plot below, there are mainly two main patterns. For those schools with SAT average below 1200, the admission rate seems not tightly related with SAT average scores. That is, the SAT average is not the main factor when university enrolling students. On the other hand, for those universities with SAT average higher than 1200, we could clearly see a trend, The higher SAT average corresponds to low admission rate. However, we could only see the relationship, and we cannot infer the internal reason for that. Based on our daily experience, the reason for this pattern is that when a school has very high SAT score requirement, it will lead to lower admission rate. This explanation based on our experience could well count for this pattern. 
+We try scatter plot to explore the relationship between them. As we can see below, there are mainly two patterns. For those schools with SAT average below 1200, the admission rate seems not tightly related with SAT average scores. That is, the SAT average is not the main factor when university enrolling students. On the other hand, for those universities with SAT average higher than 1200, we could clearly see a decreasing trend of admission rate with increasing SAT average. However, we cannot infer the internal reason for that. Based on our common sense, the reason for this pattern might be that when a school has very high SAT score requirement, it will lead to lower admission rate.
 
 
 ```{r fig.height=4}
@@ -106,12 +104,11 @@ baseplt + geom_point(alpha= 0.5, color = "navy", stroke = 0) +
 
 ```
 
-To follow on exploring the two patterns we found on the last graph, we plot the density contour lines based on the scatter plots. 
+To follow on the previous patterns, we plot the density contour lines based on the scatter plots. 
 
-From the left-hand side graph below, we see there is a sharp decline pattern, that is, as SAR average become slightly higher, the admission rate immediately drops a lot. The reason for this may be that score higher than 1400 are very rare and there is not much space for an obvious higher score, but there is still space for lower admission rate. 
+From the left-hand side graph below, we see there is a sharp decline pattern, that is, as SAR average become slightly higher, the admission rate immediately drops a lot. The reason for this may be that score higher than 1400 are very rare.
 
-Meanwhile, we see some university with relatively lower SAT average, but they still have very low admission rate. It is possibly based on the fact that SAT score is only one single requirement for universities to enroll good students. These universities on the left part of the plot may have more expectation on students with internship experience, sports talents, etc. Or, we can guess that students with very high SAT scores are not willing to go to these universities due to some reasons and thereby the SAT average becomes relatively lower. Those two reasons discussed above could explain that they have low admission rate even though they don't have very high requirement on SAT scores.
-
+Meanwhile, we see some university with relatively lower SAT average still have very low admission rate. It is possibly based on the fact that SAT score is only one single requirement for universities to enroll students. These universities on the left part of the plot may have more emphasis on parts other than score, such as internship experience, sports talents, etc. 
 
 ```{r message=FALSE, warning=FALSE, fig.height=3}
 
@@ -170,7 +167,7 @@ p4<-ggplot(college2, aes(x=tuition_out))+
 grid.arrange(p3,p4,ncol=1)
 ```
 
-By faceting instate and out-of-state tuition into different ownership groups, we can see the different distributions for public, private nonprofit, and private for-profit schools, but the pattern for instate and out-of-state tuition is similar. For public schools, both instate and out-of-state tuition are lowest among all three ownership type, and the distribution is unimodal and skewed right. For private nonprofit schools, the tuition have larger range, and its distribution is bimodal. Therefore, the tuition differs for students from different ownership type schools.
+By faceting instate and out-of-state tuition into different ownership groups, we can see the different distributions for public, private nonprofit, and private for-profit schools, but the pattern for instate and out-of-state tuition is similar. For public schools, both instate and out-of-state tuition are lowest among all three ownership type, and the distribution is unimodal and skewed right. For private nonprofit schools, the tuition have larger range, and its distribution is bimodal. Therefore, the tuition differs for students from different ownership type schools. We would recommend public schools for students with limited tuition budget.
 
 
 ```{r fig.height=5}
@@ -187,7 +184,7 @@ p6 <- ggplot(college2, aes(x=tuition_out))+
 grid.arrange(p5,p6,ncol=1)
 ```
 
-The boxplot for tuition by ownership gives us a better understanding of the median, as well as outliers of the data. We can see that the median for private nonprofit schools is highest, while that of public is lowest. Moreover, we can clearly see the outliers. The one outlier for private for-private schools with value over 70,000 dollar seems like an unusal observation.
+The boxplot for tuition by ownership below gives us a better understanding of the median, as well as outliers of the data. We can see that the median for private nonprofit schools is highest, while that of public is lowest. Moreover, we can clearly see the outliers. The one outlier for private for-private schools with value over 70,000 dollar seems like an unusal observation.
 
 ```{r fig.height=3}
 p7 <- ggplot(college1, aes(x=reorder(ownership,tuition_instate),y=tuition_instate))+
@@ -217,9 +214,9 @@ ggplot(college3, aes(x=pct_loan))+
 
 ##Values
 ###Education Quality
-More and more colleges are hiring part-time faculty as a means of cost-cutting. However, we should emphasize the importance of `full-time faculty` as it is closely related to students' academic performance. For one thing, full-time faculty members are more stable in terms of curriculum teaching and planning. Because of high flexibility, they are also more likely to have higher levels of availability for students after class.
+More and more colleges are hiring part-time faculty as a means of cost-cutting. However, we should emphasize the importance of `full-time faculty` as it might be closely related to students' academic performance. For one thing, full-time faculty members are more stable in terms of curriculum teaching and planning. Because of high flexibility, they are also more likely to have higher levels of availability for students after class.
 
-Using the feature `pct_faculty`, *percentage of full-time faculty*, we see that the distribution of % of full-time faculty is slightly positively skewed with a mode of 1.00. Thus, most colleges have entirely full-time faculty members. 
+Using the feature `pct_faculty`, *percentage of full-time faculty*, we see that the distribution of percent of full-time faculty is slightly positively skewed with a mode of 1.00. Thus, most colleges have entirely full-time faculty members. 
 
 ```{r fig.height=3}
 library(readr)
@@ -238,7 +235,7 @@ For further analysis of `full-time faculty`, we propose two research questions:
 1. Is % of full-time faculty associated with the number of undergraduates/graduates?
 2. Is % of full-time faculty associated with mean faculty salary? 
 
-To investigate the relationships, we obtained the following scatterplot matrix. We conclude that there is barely any relationship between % of full-time faculty and other variables we proposed, as no pattern can be observed from the scatterplots and the correlations are negligible.
+To investigate the relationships, we obtained the following scatterplot matrix. We conclude that there is barely any relationship between percent of full-time faculty and other variables we proposed, as the correlations are negligible.
 
 ```{r fig.width= 8}
 GGally::ggpairs(faculty, aes(alpha = 0.01),columns = colnames(faculty %>% select(-name))) +   
@@ -311,7 +308,7 @@ g3
 
 An RDI close to 1 implies high racial diversity while an RDI close to 0 implies low. From the histogram, we observe that the distribution of `RDI` is slightly negatively skewed, so that more colleges have moderate to high `RDI`'s (over 0.50). The mode is approximately 0.6 so that most colleges have moderately high racial diversity. 
 
-Note that there are a few colleges scoring 0.00 (*Table 1*), as all of their students are from one exclusive race. For instance, all students of *Thunderbird School of Global Management* are *Hispanic*. At the other tail, note the isolated bar for `RDI` = 1.00 , which is impractical as no college would have exactly even distribution of races. A closer look at the data reveals that the `race` features for these colleges are all 0, indicating that their `population` might not have been recorded properly (*Table 2*). Excluding these colleges, we find the most racially diverse colleges listed in *Table 3*.
+Note that there are a few colleges scoring 0.00 (*Table 1*), as all of their students are from one exclusive race. For instance, all students of *Thunderbird School of Global Management* are *Hispanic*. At the other tail, note the isolated bar for `RDI` = 1.00 , which is impractical as no college would have exactly even distribution of races. A closer look at the data reveals that the `race` features for these colleges are all 0, indicating that their `population` might not have been recorded properly (*Table 2*). Excluding these colleges, we find the most racially diverse colleges listed in *Table 3* below.
 
 ```{r}
 library(knitr)
@@ -365,13 +362,13 @@ colnames(gender) = c("name", "female", "male")
 gender_melted = melt(data.frame(gender), id = "name")
 g5 = ggplot(gender_melted, aes(x = fct_reorder(`variable`, value, median, na.rm = TRUE), 
                              y = value)) + geom_boxplot() + coord_flip() + 
-  labs(x = "Gender", y = "% Students", title = "Percent Students by Gender")
+  labs(x = "Gender", y = "Percent of Students", title = "Percent of Students by Gender")
 g5
 ```
 
 ##### Gender Diversity Index (GDI)
 To give a substantial measurement of gender diversity, we develop the *Gender Diversity Index (GDI)*. Like **racial diversity**, it is defined by the probability that any two students selected at random would have different genders:  
-$$GDI = 1 - Pr(\text{same gender}) = 1 - (\text{male})^2 - (\text{female})^2,$$ where *male* and *female* are % of male and female students.
+$$GDI = 1 - Pr(\text{same gender}) = 1 - (\text{male})^2 - (\text{female})^2,$$ where *male* and *female* are percent of male and female students.
 
 ```{r fig.height= 3}
 gender = gender %>% mutate(GDI = 1-female^2-male^2)
@@ -381,9 +378,9 @@ ggplot(gender, aes(x = GDI)) +
 
 ```
 
-A GDI close to 0.5 implies high racial diversity (i.e., the % of male students are close to % of female students) while a GDI close to 0 implies low racial diversity. From the histogram, we observe that the distribution of `GDI` is negatively skewed with a long left tail. Along with the boxplot, the spread for the bottom 25% of `GDI` is much wider than the top 25%, meaning that the colleges having the lowest gender diversity vary a lot in `GDI`, while the colleges with the highest gender diversity have similar `GDI`. Note that the mode is 0.5, so that most colleges have equal % of female and male students. 
+A GDI close to 0.5 implies high racial diversity (i.e., the percentage of male students are close to percentage of female students) while a GDI close to 0 implies low racial diversity. From the histogram, we observe that the distribution of `GDI` is negatively skewed with a long left tail. Note that the mode is 0.5, so that most colleges have equal % of female and male students. 
 
-Finally, the colleges with the highest gender diversity can be found in Table 4 above.
+Finally, the colleges with the highest gender diversity can be found in Table 4.
 
 ```{r}
 kable(head(na.omit(gender) %>% arrange(-GDI)),
@@ -404,13 +401,6 @@ ggplot(college, aes(x = completion_rate)) +
   geom_histogram(na.rm = TRUE, fill = "lightblue", color = "black")+
   labs(title = "Histogram of Completion Rate")
 
-```
-
-The colleges with the highest completion rates are listed below in *Table 1*.
-
-```{r}
-kable(head(na.omit(college) %>% arrange(-completion_rate) %>% select(name, completion_rate)),
-      caption = "Colleges with Highest Completion Rate")
 ```
 
 ##### Completion Rate by Institution Type
@@ -479,7 +469,7 @@ count1$ownership = factor(count1$ownership, levels = ownership_order)
 
 gc4 = mosaic(predominant_degree~ownership, count1, direction = c("v", "h"),
              gp = gpar(fill = fillcolors),
-             labeling = labeling_border(gp_labels = gpar(fontsize = 4),
+             labeling = labeling_border(gp_labels = gpar(fontsize = 5),
                                         rot_labels = c(0, 0, 0, 0), 
                                         offset_varnames = c(0,0,0,2),
                                         offset_labels = c(0,0,0,2.5)),  
@@ -490,7 +480,7 @@ gc4
 ###Earnings
 Although earnings are not the only criteria to see how success a person is, it is a very straightforward indication of performance after graduation, so we also examined earnings after graduation as a part of value a college provides.
 
-The average 10 year salary variable represents the mean earnings of students working and not enrolled at school 10 years after entry. The overall distribution of the average 10 year salary is skewed to the right. Most of our observations have an average 10 year salary of around 20,000 to 40,000 dollars. There are also a couple observations with higher average 10 year salary than 100,000 dollars.
+The `average 10 year salary` variable represents the mean earnings of students working and not enrolled at school 10 years after entry. The overall distribution of the average 10 year salary is skewed to the right. Most of our observations have an average 10 year salary of around 20,000 to 40,000 dollars. There are also a couple observations with higher average 10 year salary than 100,000 dollars.
 
 ```{r fig.height=3}
 college = read_rds("college.rds")
@@ -520,9 +510,9 @@ ggplot(college, aes(x=avg_10yr_salary))+
   ggtitle("Histogram of Average 10 Year Salary by Ownership")
 ```
 
-By faceting average 10 year salary into different ownership group, we can see the different distribution for public, private nonprofit, and private for-profit schools. The total numbers of observations for the three ownership type are `r a`, `r b`, `r c`. Among the three types, although private nonprofit schools have the least observations, they have the distribution most skewed right, with highest mean and mode. This indicates students from private nonprofit schools have highest average 10 year salary among the three school types. While Public schools have the mode for average 10 year salary at around 30,000 dollars, private for-profit schools have the mode at around 20,000 dollars, and overall, students from public schools rank the second in average 10 year salary. Therefore, the average 10 year salary differs for students from different ownership type schools.
+By faceting average 10 year salary into different ownership group, we can see the different distribution for public, private nonprofit, and private for-profit schools. The total numbers of observations for the three ownership type are `r a`, `r b`, `r c`. Among the three types, although private nonprofit schools have the least observations, they have the distribution most skewed right, with highest mean and mode. This indicates students from private nonprofit schools have highest average 10 year salary among the three school types. While public schools have the mode for average 10 year salary at around 30,000 dollars, private for-profit schools have the mode at around 20,000 dollars, and overall, students from public schools rank the second in average 10 year salary. Therefore, the average 10 year salary differs for students from different ownership type schools.
 
-The boxplot for average 10 year salary gives us a better understanding of the median, as well as outliers of the data. We can see that the median for private nonprofit schools is highest, while that of private for-profit ones is lowest. Moreover, we can clearly see the outliers. Comparing to other ownership types, private for-profit schools have the least number of outliers, and the value of outlier is lowest (no outliers with value over 100,000). The boxplot also indicates students from private nonprofit schools have higher average 10 year salary than those from public and private for-profit schools.
+The boxplot below for average 10 year salary gives us a better understanding of the median, as well as outliers of the data. We can see that the median for private nonprofit schools is highest, while that of private for-profit ones is lowest. Moreover, we can clearly see the outliers. Comparing to other ownership types, private for-profit schools have the least number of outliers, and the value of outlier is lowest (no outliers with value over 100,000). The boxplot also indicates students from private nonprofit schools have higher average 10 year salary than those from public and private for-profit schools.
 
 ```{r fig.height=4}
 ggplot(college, aes(x=reorder(ownership,avg_10yr_salary),y=avg_10yr_salary))+
@@ -535,7 +525,6 @@ ggplot(college, aes(x=reorder(ownership,avg_10yr_salary),y=avg_10yr_salary))+
 
 ```{r fig.width=8, fig.height=4}
 college =  college[!is.na(college$tuition_out), ]
-library(gridExtra)
 p1 <- ggplot(college, aes(x=tuition_instate,y=avg_10yr_salary))+
   geom_point(alpha = .3, color = "navy", stroke = 0)+
   labs(x="Instate Tuition (in Thousands)",y="Average 10 Year Salary (in Thousands)")+
@@ -615,7 +604,7 @@ Our project provides analysis of different colleges to help high school students
 
 Admission requirement. Admission requirement is assessed by **SAT score** and **admission rate**. Importantly, for schools with average SAT below 1200, admission rate doesn’t seem to have strong relationship with average SAT scores. On the other hand, for those with average SAT higher than 1200, admission rate appears to decrease with higher SAT score. Such academically demanding schools may have an explicit requirement for SAT score for admission.
 
-Affordability. Affordability is analyzed through **tuition** (out-of-state/instate) and **federal loan**. Generally, while out-of-state tuition is higher than instate tuition, schools with higher out-of-state tuition tend to have higher instate tuition. The distributions for out-of-state and instate tuition are similar across ownership groups. Public schools have the lowest tuition whereas private non-profit schools have the highest with larger variation. For federal loan, while private for-profit schools have the highest percentage of all undergraduate students receiving a federal loan, public schools have lowest. Therefore, we recommend that high schoolers with a limited budget should attend public schools where tuition is comparatively low, and private for-profit schools where they are more likely to be granted a federal loan.
+Affordability. Affordability is analyzed through **tuition** (out-of-state/instate) and **federal loan**. Generally, while out-of-state tuition is higher than instate tuition, schools with higher out-of-state tuition tend to have higher instate tuition. The distributions for out-of-state and instate tuition are similar across ownership groups. Public schools have the lowest tuition whereas private non-profit schools have the highest with larger variation. For federal loan, while private for-profit schools have the highest percentage of all undergraduate students receiving a federal loan, public schools have lowest. Therefore, we recommend that high schoolers with a limited budget to attend public schools where tuition is comparatively low, and private for-profit schools where they are more likely to be granted a federal loan.
 
 Education quality. **Full-time faculty percentage** is selected as the indicator for education quality since it is closely related to students’ academic performances. Most colleges have 100% full-time faculty while the rest have varying percentage from none to full.
 
@@ -637,40 +626,42 @@ cost_value = college %>%
 ggpairs(cost_value, 
                 upper = list(continuous = wrap("cor", size = 5, alignPercent = 1)),
                 lower = list(continuous = wrap("points",alpha = 0.1))) +   
-  theme(axis.text.x = element_text(size = rel(0.8),angle = 45, hjust = 1),
+  theme(axis.text.x = element_text(size = rel(1),angle = 45, hjust = 1),
         axis.text.y = element_text(size = rel(1)),
-        strip.text = element_text(size = rel(0.8)))+
+        strip.text = element_text(size = rel(1)),
+        plot.title = element_text(size=18))+
   labs(title = "Scatterplot Matrix for Cost-Value Tradeoffs",
        subtitle="Cost: SAT Average, In State Tuition, Out-of-State Tuition
 Value: Completion Rate, Average 10 Year Salary")
   
 ```
+
 \newpage
 #INTERACTIVE COMPONENT
 
-Our interactive dashboard aims to help users to filter the characteristics of a specific university they are interested in and to make comparisons across universities. For example, if a person is very interested in Columbia University, he can select Columbia University in the dashboard and see where Columbia University falls on each of the distribution plots of variables including education quality, diversity, completion rate and earnings. From the plots, users can easily compare Columbia University and other universities. 
+Our interactive dashboard (https://yourbestcollegechoice.shinyapps.io/final_proj/) aims to help users to filter the characteristics of a specific university they are interested in and to make comparisons across universities. For example, if a person is very interested in Columbia University, he can select Columbia University in the dashboard and see where Columbia University falls on each of the distribution plots of variables including education quality, diversity, completion rate and earnings. From the plots, users can easily compare Columbia University with other universities. 
 
 We choose Shiny as our interactive plot tool based on the following reasons. Firstly, Shiny is an effective high-level tool for the interactive plot. Shiny provides very convenient functions for creating a dashboard including base components like sidebar, main body, layout, and reactive plot from data change. Secondly, since Shiny is an R-based GUI programming tool, we could base our shiny app on the R codes we already have. Instead of spending much time on the grammar of a new language, we could focus on the logical part and user experience of this interactive dashboard.
 
 Introduction to our Shiny Dashboard: 
 
-1. User cases
-Our research target is how schools with higher admission requirement and higher tuition fees correlate to higher education quality, diversity, completion rate, and earnings. We already have researched each variable and their relationships respectively. That means, now for a student or his/her parent, he has a sense of how these variables concerning with cost and value are distributed. However, he will ultimately focus on several universities that he can or wants to go to. Therefore, we provide an interactive tool for students and parents to narrow down the schools he will probably go to and see clearly the aspects of education quality, diversity, completion rate and earnings of that specific university. 
+1. User cases \newline
+Our research target is to find how schools with higher admission requirement and higher tuition fees correlate to higher education quality, diversity, completion rate, and earnings. We already have researched each variable and their relationships respectively. That means, now for a student or his/her parent, he has a sense of how these variables concerning with cost and value are distributed. However, he will ultimately focus on several universities that he can or wants to go to. Therefore, we provide an interactive tool for students and parents to narrow down the schools he will probably go to and see clearly the aspects of education quality, diversity, completion rate and earnings of that specific university. 
 
 2. Functions
 (a) Search universities by SAT scores and admission rate
 SAT is a requirement on admission to most universities and admission rate is an essential aspect students would consider when applying to a university. Therefore, we let users select the universities in some SAT score and admission rate range on the scatterplot, so that they could narrow down the range of universities they are able to attend. 
 
-(b) Search a university by name
+(b) Search a university by name \newline
 Users could type the name of the university in the university table to access the info of that university directly.
 
-(c) Plot distribution on education quality, diversity, completion rate and earnings
+(c) Plot distribution on education quality, diversity, completion rate and earnings \newline
 When a selection of a specific university has been made, the distribution on education quality, diversity, completion rate and earnings will be shown in the form of histograms. Where that university falls in the histogram is also visualized for a quick search. 
 
-(d) Data exploring
+(d) Data exploring \newline
 We provide a separate page for the data we use, because we want to enable users to explore the original data themselves. We also provide the metadata information and data missing patterns for reference.
 
-3. User instructions
+3. User instructions \newline
 Draw a square range based on the SAT scores and admission rate on the scatterplot. A list of universities within that SAT range and admission rate range will be shown. Then click a university that you are interested in in the table. The distribution plots with the specified university highlighted will be shown below. Besides, you can go to the data page to explore the metadata information, the original data and the data missing patterns.
 
 4. Code links
@@ -679,7 +670,7 @@ https://github.com/ZhangZhida/EDAV_FinalProject/blob/master/shiny/Final_Proj/app
 \newpage
 #CONCLUSION
 
-One limitation of our project is the completeness of the SAT scores. 6398 out of the 7703 (roughly 83%) observations have missing SAT scores, which could jeopardize the generality of our conclusion. Also, since we subsetted the data set to consider only the most recent time period (2014-2015) when average 10-year-salary is available, the observed patterns could have changed over the past few years. Additionally, since we did not cover all the features in the original data set, we might overlook some other important factors, which could include some confounding variables that intermediate the correlations we observed. Lastly, when analyzing the cost-value trade-off, since we only take continuous features into consideration, a caveat should be made regarding the categorical features such as predominant/highest degree, which could affect the overall pattern.
+One limitation of our project is the completeness of the SAT scores. 6398 out of the 7703 (roughly 83%) observations have missing SAT scores, which could jeopardize the generality of our conclusion. Also, since we subsetted the data set to consider only the most recent time period (2014-2015) when average 10-year-salary is available, the observed patterns could have changed over the past few years. Additionally, since we did not cover all the features in the original data set, we might overlook some other important factors, which could include some confounding variables that intermediate the correlations we observed. Lastly, when analyzing the cost-value trade-off, since we only take continuous features into consideration, a caveat should be made regarding the categorical features such as predominant degree, which could affect the overall pattern.
 
 Hence, future exploration could make use of larger span of the original dataset, with longer time span and more variables included. Furthermore, one could apply methods such as logistic regression to analyze the unexplored categorical features in cost-value trade-off.
 
