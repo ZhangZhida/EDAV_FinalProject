@@ -18,7 +18,7 @@ Therefore, in our project, we would like to provide a way for students and their
 
 To guide the project, we propose the main research question: **how the values are related to the costs?** Specifically, do schools with higher admission requirement and higher tuition fees provide higher education quality, diversity, completion and earnings?
 
-Our team members include Qi Feng, Zhida Zhang, and Zhiyuan Zhao. Qi Feng and Zhiyuan Zhao are responsible for data quality, and Zhida Zhang is in charge of presenting the results on the interactive platform of Shiny. Other than those, we split the remaining tasks evenly by each taking on two parts of the cost-value tradeoffs to perform analysis as well as writing the report.
+Our team members include Qi Feng, Zhida Zhang, and Zhiyuan Zhao. Qi Feng and Zhiyuan Zhao are responsible for data quality, and Zhida Zhang is in charge of presenting the results on the interactive platform of Shiny. Other than those, we split the remaining tasks evenly by each taking on two parts of the cost-value tradeoffs to perform analysis as well as writing the report. All of our work can be found here in the Github repository: https://github.com/ZhangZhida/EDAV_FinalProject.
 
 \newpage
 
@@ -29,7 +29,7 @@ The dataset employed in this project was obtained from *The College Scorecard* (
 \newpage
 #ANALYSIS OF DATA QUALITY
 
-Since *The College Scorecard* project is supervised under the U.S. Department of Education, we are safe to presume the source of our data is valid. For our interest, we selected 35 features, of which 25 are continuous and 10 are categorical. A detailed data dictionary could be found at the GitHub repository. (https://github.com/ZhangZhida/EDAV_FinalProject; file:Data Dictionary.pdf) Data cleaning code can also be found there with file name Data cleaning.R.
+Since *The College Scorecard* project is supervised under the U.S. Department of Education, we are safe to presume the source of our data is valid. For our interest, we selected 35 features, of which 25 are continuous and 10 are categorical. A detailed data dictionary could be found at the GitHub repository. (https://github.com/ZhangZhida/EDAV_FinalProject/blob/master/Data%20Dictionary.pdf) Data cleaning code can also be found here https://github.com/ZhangZhida/EDAV_FinalProject/blob/master/Data%20cleaning.R.
 
 For missing value and patterns, we have the following analysis. According to the histogram below, for most schools, average SAT scores are missing. Number of graduate students, admission rate, and completion rate have missing value over 50%. Percent of full time faculty, in state tuition, out-of-state tuition, and average faculty salary have missing value a little under 50%. Other variables have lower than 12% missing value.
 
@@ -664,7 +664,7 @@ We provide a separate page for the data we use, because we want to enable users 
 3. User instructions \newline
 Draw a square range based on the SAT scores and admission rate on the scatterplot. A list of universities within that SAT range and admission rate range will be shown. Then click a university that you are interested in in the table. The distribution plots with the specified university highlighted will be shown below. Besides, you can go to the data page to explore the metadata information, the original data and the data missing patterns.
 
-4. Code links
+4. Code links \newline
 https://github.com/ZhangZhida/EDAV_FinalProject/blob/master/shiny/Final_Proj/app.R 
 
 \newpage
