@@ -523,28 +523,7 @@ ggplot(college, aes(x=reorder(ownership,avg_10yr_salary),y=avg_10yr_salary))+
 
 
 
-```{r fig.width=8, fig.height=4}
-college =  college[!is.na(college$tuition_out), ]
-p1 <- ggplot(college, aes(x=tuition_instate,y=avg_10yr_salary))+
-  geom_point(alpha = .3, color = "navy", stroke = 0)+
-  labs(x="Instate Tuition (in Thousands)",y="Average 10 Year Salary (in Thousands)")+
-  ggtitle("Average 10 Year Salary Increases with Higher Instate Tuition")+ 
-  geom_smooth(method='lm',formula=y~x,color="red")+
-  theme_classic(14)+
-  theme(plot.title = element_text(size = rel(0.6)))
-p2 <- ggplot(college, aes(x=tuition_out,y=avg_10yr_salary))+
-  geom_point(alpha = .3, color = "navy", stroke = 0)+
-  labs(x="Out-of-State Tuition (in Thousands)",y="Average 10 Year Salary (in Thousands)")+
-  ggtitle("Average 10 Year Salary Increases with Higher Out-of-State Tuition")+ 
-  geom_smooth(method='lm',formula=y~x,color="red")+
-  theme_classic(14)+
-  theme(plot.title = element_text(size = rel(0.6)))
-r2_1 = format(summary(lm(college$avg_10yr_salary~college$tuition_instate))$r.squared*100, digits = 3)
-r2_2 = format(summary(lm(college$avg_10yr_salary~college$tuition_out))$r.squared*100, digits = 3)
-grid.arrange(p1,p2,ncol=2)
-```
 
-We can see from the scatter plot that there is some positive correlation between both instate, out-of-state tuition and average 10 year salary. The more expensive the tuition is, the higher the average 10 year salary is. `r r2_1`, `r r2_2` percent of the variation in average 10 year salary is explained by the variation in predictor instate tuition, and out-of-state tuition, respectively.
 
 ###Cost-Value Tradeoffs
 
@@ -596,6 +575,29 @@ ggpairs(cost_value,
         axis.text.y = element_text(size = rel(0.5)),
         strip.text = element_text(size = rel(0.5)))
 ```
+
+```{r fig.width=8, fig.height=4}
+college =  college[!is.na(college$tuition_out), ]
+p1 <- ggplot(college, aes(x=tuition_instate,y=avg_10yr_salary))+
+  geom_point(alpha = .3, color = "navy", stroke = 0)+
+  labs(x="Instate Tuition (in Thousands)",y="Average 10 Year Salary (in Thousands)")+
+  ggtitle("Average 10 Year Salary Increases with Higher Instate Tuition")+ 
+  geom_smooth(method='lm',formula=y~x,color="red")+
+  theme_classic(14)+
+  theme(plot.title = element_text(size = rel(0.6)))
+p2 <- ggplot(college, aes(x=tuition_out,y=avg_10yr_salary))+
+  geom_point(alpha = .3, color = "navy", stroke = 0)+
+  labs(x="Out-of-State Tuition (in Thousands)",y="Average 10 Year Salary (in Thousands)")+
+  ggtitle("Average 10 Year Salary Increases with Higher Out-of-State Tuition")+ 
+  geom_smooth(method='lm',formula=y~x,color="red")+
+  theme_classic(14)+
+  theme(plot.title = element_text(size = rel(0.6)))
+r2_1 = format(summary(lm(college$avg_10yr_salary~college$tuition_instate))$r.squared*100, digits = 3)
+r2_2 = format(summary(lm(college$avg_10yr_salary~college$tuition_out))$r.squared*100, digits = 3)
+grid.arrange(p1,p2,ncol=2)
+```
+
+We can see from the scatter plot that there is some positive correlation between both instate, out-of-state tuition and average 10 year salary. The more expensive the tuition is, the higher the average 10 year salary is. `r r2_1`, `r r2_2` percent of the variation in average 10 year salary is explained by the variation in predictor instate tuition, and out-of-state tuition, respectively.
 
 \newpage
 #EXECUTIVE SUMMARY
