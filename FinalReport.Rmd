@@ -73,10 +73,12 @@ college <- readRDS('college.rds')
 college_no_na <- college[with(college, (!is.na(sat_avg)) & (!is.na(admission_rate))), ]
 
 plot_admi <- ggplot(college_no_na, aes(x = admission_rate)) +
-  geom_histogram(fill = "lightblue", color = "black")
+  geom_histogram(fill = "lightblue", color = "black") + 
+  ggtitle("Histogram of Admission Rate")
 
 plot_sat <- ggplot(college_no_na, aes(x = sat_avg)) +
-  geom_histogram(fill = "lightblue", color = "black")
+  geom_histogram(fill = "lightblue", color = "black") + 
+  ggtitle("Histogram of Average SAT Score")
 
 grid.arrange(plot_admi, plot_sat, ncol = 2)
 ```
@@ -173,11 +175,13 @@ The boxplot for tuition by ownership below gives us a better understanding of th
 p7 <- ggplot(college1, aes(x=reorder(ownership,tuition_instate),y=tuition_instate))+
   geom_boxplot()+
   labs(y="Instate Tuition (in Thousands)",x="Ownership")+
-  ggtitle("Boxplot of Instate Tuition by Ownership")
+  ggtitle("Boxplot of Instate Tuition by Ownership") +
+  theme(plot.title = element_text(size = rel(0.8)))
 p8 <- ggplot(college2, aes(x=reorder(ownership,tuition_out),y=tuition_out))+
   geom_boxplot()+
   labs(y="Out-of-State Tuition (in Thousands)",x="Ownership")+
-  ggtitle("Boxplot of Out-of-State Tuition by Ownership")
+  ggtitle("Boxplot of Out-of-State Tuition by Ownership") +
+  theme(plot.title = element_text(size = rel(0.8)))
 grid.arrange(p7,p8,ncol=2)
 ```
 
@@ -478,8 +482,8 @@ college$ownership <- recode[college$ownership]
 college$ownership<-fct_relevel(college$ownership,'public','nonprofit','profit')
 ggplot(college, aes(x=avg_10yr_salary))+
   geom_histogram(bins = 30,fill = "lightblue", color = "black")+
-  labs(x="Average 10 Year Salary (in Thousands)")+
-  ggtitle("Histogram of Average 10 Year Salary")
+  labs(x="Average 10-year Salary (in Thousands)")+
+  ggtitle("Histogram of Average 10-year Salary")
 ```
 
 ```{r fig.height=3}
@@ -489,8 +493,8 @@ c=count(college[ which(college$ownership=='profit'),])
 ggplot(college, aes(x=avg_10yr_salary))+
   geom_histogram(bins = 30,fill = "lightblue", color = "black")+
   facet_grid(.~ownership)+
-  labs(x="Average 10 Year Salary (in Thousands)")+
-  ggtitle("Histogram of Average 10 Year Salary by Ownership")
+  labs(x="Average 10-year Salary (in Thousands)")+
+  ggtitle("Histogram of Average 10-year Salary by Ownership")
 ```
 
 By faceting average 10-year salary into different ownership groups, we can see the different distributions for public, private nonprofit, and private for-profit schools. The total numbers of observations for the three ownership type are `r a`, `r b`, `r c`. Among the three types, although private non-profit schools have the least observations, they have the distribution the most skewed to the right, with the highest mean and mode. This indicates students from private non-profit schools have highest average 10 year salary among the three types of schools. While public schools have the mode for average 10-year salary at around 30,000 dollars, private for-profit schools have the mode at around 20,000 dollars, and overall, students from public schools rank the second in average 10 year salary. Therefore, the average 10-year salary differs for students from schools with different ownership types.
@@ -500,8 +504,8 @@ The boxplot below gives us a better understanding of the median, as well as outl
 ```{r fig.height=4}
 ggplot(college, aes(x=reorder(ownership,avg_10yr_salary),y=avg_10yr_salary))+
   geom_boxplot()+
-  labs(y="Average 10 Year Salary (in Thousands)",x="Ownership")+
-  ggtitle("Boxplot of Average 10 Year Salary by Ownership")
+  labs(y="Average 10-year Salary (in Thousands)",x="Ownership")+
+  ggtitle("Boxplot of Average 10-year Salary by Ownership")
 ```
 
 ###Cost-Value Tradeoffs
@@ -561,18 +565,18 @@ For our interest, we investigate the correlation between `tuition` and `average 
 college =  college[!is.na(college$tuition_out), ]
 p1 <- ggplot(college, aes(x=tuition_instate,y=avg_10yr_salary))+
   geom_point(alpha = .3, color = "navy", stroke = 0)+
-  labs(x="Instate Tuition (in Thousands)",y="Average 10 Year Salary (in Thousands)")+
-  ggtitle("Average 10 Year Salary Increases with Higher Instate Tuition")+ 
+  labs(x="Instate Tuition (in Thousands)",y="Average 10-year Salary (in Thousands)")+
+  ggtitle("Average 10-year Salary vs. Instate Tuition")+ 
   geom_smooth(method='lm',formula=y~x,color="red")+
   theme_classic(14)+
-  theme(plot.title = element_text(size = rel(0.6)))
+  theme(plot.title = element_text(size = rel(0.7)))
 p2 <- ggplot(college, aes(x=tuition_out,y=avg_10yr_salary))+
   geom_point(alpha = .3, color = "navy", stroke = 0)+
-  labs(x="Out-of-State Tuition (in Thousands)",y="Average 10 Year Salary (in Thousands)")+
-  ggtitle("Average 10 Year Salary Increases with Higher Out-of-State Tuition")+ 
+  labs(x="Out-of-State Tuition (in Thousands)",y="Average 10-year Salary (in Thousands)")+
+  ggtitle("Average 10-year Salary vs. Out-of-State Tuition")+ 
   geom_smooth(method='lm',formula=y~x,color="red")+
   theme_classic(14)+
-  theme(plot.title = element_text(size = rel(0.6)))
+  theme(plot.title = element_text(size = rel(0.7)))
 r2_1 = format(summary(lm(college$avg_10yr_salary~college$tuition_instate))$r.squared*100, digits = 3)
 r2_2 = format(summary(lm(college$avg_10yr_salary~college$tuition_out))$r.squared*100, digits = 3)
 grid.arrange(p1,p2,ncol=2)
@@ -612,9 +616,9 @@ ggpairs(cost_value,
         axis.text.y = element_text(size = rel(1)),
         strip.text = element_text(size = rel(1)),
         plot.title = element_text(size=18))+
-  labs(title = "Scatterplot Matrix for Cost-Value Tradeoffs",
-       subtitle="Cost: SAT Average, In State Tuition, Out-of-State Tuition
-Value: Completion Rate, Average 10 Year Salary")
+  labs(title = "Scatterplot Matrix for Cost-Value Trade-offs",
+       subtitle="Cost: Average SAT Score, Instate Tuition, Out-of-State Tuition
+Value: Completion Rate, Average 10-year Salary")
   
 ```
 
