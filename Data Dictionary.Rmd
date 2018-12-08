@@ -1,0 +1,23 @@
+---
+title: "Data Dictionary"
+output: pdf_document
+classoption: landscape
+geometry: margin=1cm
+---
+
+**This file contains the 35 variables in the `college` dataset and their descriptions.**
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+```
+
+```{r}
+library(readr)
+library(tidyverse)
+library(kableExtra)
+
+dict = readxl::read_xlsx("Data dictionary.xlsx")
+dict %>% knitr::kable() %>% kable_styling(bootstrap_options = c("striped", "hover","condensed", "responsive"), full_width = F, position = "left")
+```
