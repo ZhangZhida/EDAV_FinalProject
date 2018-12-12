@@ -8,7 +8,7 @@ This repository is for the final project of course
 	
 
 ## Interactive Component
-[Shiny Dashboard](https://yourbestcollegechoice.shinyapps.io/final_proj/)
+[Shiny demo](https://yourbestcollegechoice.shinyapps.io/final_proj/)
 
 ## Collaborators
 - Zhiyuan Zhao
