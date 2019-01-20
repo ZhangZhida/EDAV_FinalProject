@@ -3,12 +3,12 @@ This repository is for the final project of course
 	STAT GR5702 Exploratory Data Analysis and Visualization (EDAV), Fall 2018
 
 ## Final Report
-- [Rmd](https://github.com/ZhangZhida/EDAV_FinalProject/blob/master/FinalReport.Rmd)
-- [PDF](https://github.com/ZhangZhida/EDAV_FinalProject/blob/master/FinalReport.pdf)
+- Rmd (https://github.com/ZhangZhida/EDAV_FinalProject/blob/master/FinalReport.Rmd)
+- PDF (https://github.com/ZhangZhida/EDAV_FinalProject/blob/master/FinalReport.pdf)
 	
 
 ## Interactive Component
-[Shiny demo](https://yourbestcollegechoice.shinyapps.io/final_proj/)
+- Shiny demo is here (https://yourbestcollegechoice.shinyapps.io/final_proj/)
 
 ## Collaborators
 - Zhiyuan Zhao
